@@ -31,8 +31,6 @@ const authMiddleware = async (req, res, next) => {
     }
 
     req.user = user;
-    // req.userId = user._id;
-    // req.userIdentifier = user.identifier;
     next();
   } catch (err) {
     console.error("JWT auth error:", err.message || err);
@@ -40,4 +38,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+module.exports = { authMiddleware };
