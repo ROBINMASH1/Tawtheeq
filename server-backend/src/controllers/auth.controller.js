@@ -80,16 +80,12 @@ const login = async (req, res) => {
     }
 
     const token = createToken(user);
-    return res.status(200).json({
-      token,
-      user: {
-        id: user._id,
-        identifier: user.identifier,
-        name: user.name,
-        role: user.roleModel,
-        ...(subRole && { subRole }),
-      },
-    });
+    const responsePayload = { token };
+    if (user.roleModel === "uniUser" && subRole) {
+      responsePayload.user = { subRole };
+    }
+
+    return res.status(200).json(responsePayload);
   } catch (err) {
     console.error("Login error:", err);
     return res.status(500).json({ error: "Internal server error" });
@@ -98,7 +94,6 @@ const login = async (req, res) => {
 
 /**
  * POST /api/auth/activate
- *
  * Validates student details, checks email uniqueness, and sends a 6-digit OTP.
  * Does NOT update User/Student docs — the client must re-send the activation
  * details (email, phone, newPassword) with the OTP in verify-otp.
@@ -126,7 +121,9 @@ const activateAccount = async (req, res) => {
 
     // Only students can go through the activation flow
     if (user.roleModel !== "Student") {
-      return res.status(400).json({ error: "Only student accounts can be activated" });
+      return res
+        .status(400)
+        .json({ error: "Only student accounts can be activated" });
     }
 
     const studentProfile = await Student.findById(user.profile);
@@ -181,7 +178,8 @@ const verifyOTP = async (req, res) => {
 
     if (!identifier || !otp || !email || !phone || !newPassword) {
       return res.status(400).json({
-        error: "Identifier, OTP, email, phone, and newPassword are all required",
+        error:
+          "Identifier, OTP, email, phone, and newPassword are all required",
       });
     }
 
