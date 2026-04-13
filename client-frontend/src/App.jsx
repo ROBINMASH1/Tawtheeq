@@ -5,12 +5,12 @@ import Footer from './componant/Footer';
 import Navbar from './componant/Navbar';
 import Verify from './pages/verify';
 import Login from './pages/login';
-import StudentDashboard from './pages/studentDashboard';
-import MoheDashboard from './pages/moheDashboard';
-import StaffDashboard from './pages/staffDashboard';
-import AdminDashboard from './pages/adminDashboard';
+import StudentDashboard from './pages/student-Dashboard';
+import MoheDashboard from './pages/mohe-dashboard';
+import StaffDashboard from './pages/staff-dashboard';
+import AdminDashboard from './pages/admin-dashboard';
 import ForgotPassword from './pages/forgotPassword';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute from './componant/ProtectedRoute';
 import ScrollToTop from './componant/scroll';
 export default function App() {
   
