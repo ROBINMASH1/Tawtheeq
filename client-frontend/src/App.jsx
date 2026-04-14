@@ -12,6 +12,7 @@ import AdminDashboard from './pages/admin-dashboard';
 import ForgotPassword from './pages/forgotPassword';
 import ProtectedRoute from './componant/ProtectedRoute';
 import ScrollToTop from './componant/scroll';
+import Test from './pages/test';
 export default function App() {
   
 
@@ -28,6 +29,7 @@ export default function App() {
         <Route path="/verify" element={<Verify />} className="pt-16"/>
         <Route path="/login" element={<Login />} className="pt-16"/>
         <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16"/>
+        <Route path="/test" element={<Test />} className="pt-16"/>
         <Route path="/student-dashboard" element={
           <ProtectedRoute allowedRoles={['student']}>
             <StudentDashboard />

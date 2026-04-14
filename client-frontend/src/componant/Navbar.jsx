@@ -1,9 +1,12 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 
 export default function Navbar() {
   const { dark, toggleDark } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
   const [visible, setVisible] = useState(true);
   const lastScrollY = useRef(0);
@@ -11,19 +14,21 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
       if (currentScrollY < lastScrollY.current || currentScrollY < 10) {
-        setVisible(true);  // scrolling up → show
+        setVisible(true);
       } else {
-        setVisible(false); // scrolling down → hide
+        setVisible(false);
       }
-
       lastScrollY.current = currentScrollY;
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const isActive = (path) => location.pathname === path;
 
@@ -34,8 +39,8 @@ export default function Navbar() {
 
       {/* Logo */}
       <Link to="/" className="flex items-center gap-2">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-lg">
-          <img src="badge.png" alt="Tawtheeq Logo" />
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center">
+          <img src="/badge.png" alt="Tawtheeq Logo" />
         </div>
         <span className="font-semibold text-2xl">
           <span className="text-black dark:text-white">Taw</span>
@@ -45,19 +50,21 @@ export default function Navbar() {
 
       {/* Nav links */}
       <div className="flex items-center gap-2">
+
         <Link
           to="/verify"
-          className={`px-4 py-2 rounded-xl text-medium font-medium transition-colors ${
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
             isActive('/verify')
               ? 'bg-green-200 dark:bg-green-900/30 text-green-600'
               : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
           }`}
         >
-          Verify Credintials
+          Verify Credentials
         </Link>
+
         <Link
           to="/"
-          className={`px-4 py-2 rounded-xl text-medium font-medium transition-colors ${
+          className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
             isActive('/')
               ? 'bg-green-200 dark:bg-green-900/30 text-green-600'
               : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -65,21 +72,25 @@ export default function Navbar() {
         >
           Home
         </Link>
-        <Link
-          to="/login"
-          className={`px-4 py-2 rounded-xl text-medium font-medium transition-colors ${
-            isActive('/login')
-              ? 'bg-green-200 dark:bg-green-900/30 text-green-600'
-              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-          }`}
-        >
-          Login
-        </Link>
+
+        {/* Show Login link only when logged out */}
+        {!user && (
+          <Link
+            to="/login"
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
+              isActive('/login')
+                ? 'bg-green-200 dark:bg-green-900/30 text-green-600'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+            }`}
+          >
+            Login
+          </Link>
+        )}
 
         {/* Dark mode toggle */}
         <button
           onClick={toggleDark}
-          className="ml-2 w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors"
+          className="ml-1 w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-gray-300 transition-colors"
           aria-label="Toggle dark mode"
         >
           {dark ? (
@@ -100,8 +111,34 @@ export default function Navbar() {
             </svg>
           )}
         </button>
-      </div>
 
+        {/* Show user info + logout only when logged in */}
+        {user && (
+          <div className="flex items-center gap-3 ml-2 pl-3 border-l border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col items-end">
+              <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                {user?.name || user?.email || 'User'}
+              </span>
+              <span className="text-xs text-green-500 capitalize">{user?.role}</span>
+            </div>
+            <div className="w-9 h-9 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-sm">
+              {(user?.name || user?.identifier || 'U')[0].toUpperCase()}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        )}
+
+      </div>
     </nav>
   );
 }

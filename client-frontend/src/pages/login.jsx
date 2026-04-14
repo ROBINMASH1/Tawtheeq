@@ -15,7 +15,7 @@ export default function Login() {
     switch (role?.toLowerCase()) {
       case "student":
         return navigate("/student-dashboard");
-      case "mohe admin":
+      case "moheadmin":
         return navigate("/mohe-dashboard");
       case "staff":
         return navigate("/staff-dashboard");
@@ -126,14 +126,14 @@ export default function Login() {
             {/* Email */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Email
+                Nashonal ID / Username
               </label>
               <input
-                type="email"
+                type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                placeholder="you@example.com"
+                placeholder="Enter your National ID or Username"
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 transition"
               />
             </div>

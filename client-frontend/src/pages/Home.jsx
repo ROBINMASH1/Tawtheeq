@@ -18,7 +18,7 @@ export default function Home() {
 
           {/* Badge */}
           <div className="inline-flex items-center gap-2 border border-white/30 bg-green/300 backdrop-blur-sm text-white text-lg px-4 py-2 rounded-full">
-            ✦ Verify credentials with confidence using our decentralized platform. ✦
+            ✦ Verify certificates with confidence using our decentralized platform. ✦
           </div>
 
           {/* Heading */}
