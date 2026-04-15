@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const studentSchema = new mongoose.Schema(
   {
     phone: { type: String },
+    email: { type: String },
     isActive: { type: Boolean, default: false },
   },
   { timestamps: true },

@@ -1,20 +1,41 @@
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const Student = require("../models/students.model");
+const UniUser = require("../models/uniUsers.model");
 
-const createToken = (user) => {
+const createToken = async (user) => {
   try {
     if (!process.env.JWT_SECRET) {
       throw new Error("JWT_SECRET is not configured");
     }
+
+    const payload = {
+      userId: user._id,
+      identifier: user.identifier,
+      roleModel: user.roleModel,
+      name: user.name,
+    };
+
+    // For uniUsers, fetch the sub-role (Uniadmin / UniStaff) from the profile
+    if (user.roleModel === "uniUser") {
+      const uniUserProfile = await UniUser.findById(user.profile);
+      payload.subRole = uniUserProfile?.role ?? null;
+    }
+
+    // For students, fetch the activation status and contact info from the profile if active
+    if (user.roleModel === "Student") {
+      const studentProfile = await Student.findById(user.profile);
+      if (studentProfile?.isActive) {
+        payload.isActive = true;
+        payload.email = studentProfile.email;
+        payload.phone = studentProfile.phone;
+      } else {
+        payload.isActive = false;
+      }
+    }
+
     return jwt.sign(
-      {
-        id: user._id,
-        identifier: user.identifier,
-        role: user.roleModel,
-        profile: user.profile,
-        name: user.name,
-      },
+      payload,
       process.env.JWT_SECRET,
       { expiresIn: "1d" },
     );
@@ -49,18 +70,6 @@ const sendOTPEmail = async (toEmail, otp) => {
   }
 };
 
-const checkStudentActivation = async (user, res) => {
-  const studentProfile = await Student.findById(user.profile);
 
-  if (!studentProfile?.isActive) {
-    res.status(200).json({
-      identifier: user.identifier,
-      message: "Please complete your profile to activate your account.",
-    });
-    return true;
-  }
 
-  return false;
-};
-
-module.exports = { createToken, sendOTPEmail, checkStudentActivation };
+module.exports = { createToken, sendOTPEmail };
