@@ -50,7 +50,7 @@ const createStudent = async (req, res) => {
     await AuditLog.create({
       actionType: "CREATE_STUDENT",
       performedBy: userId,
-      details: `Created student account with personal ID: ${trimmedId}`,
+      details: `Created student account with personal ID: ${trimmedId} with temporary password: ${tempPassword}`,
       ipAddress: req.ip || req.connection?.remoteAddress,
     });
 
@@ -98,10 +98,11 @@ const requestActivationOTP = async (req, res) => {
     }
 
     // Check for email uniqueness
-    const emailTaken = await User.findOne({
+    const emailTaken = await Student.findOne({
       email,
-      _id: { $ne: user._id },
+      _id: { $ne: user.profile },
     });
+
     if (emailTaken) {
       return res.status(409).json({ error: "Email is already in use" });
     }
@@ -114,7 +115,6 @@ const requestActivationOTP = async (req, res) => {
     if (phoneTaken) {
       return res.status(409).json({ error: "Phone number is already in use" });
     }
-
 
     // Generate and send a 6-digit OTP.
     const otp = String(Math.floor(100000 + Math.random() * 900000));
@@ -196,7 +196,6 @@ const verifyOTP = async (req, res) => {
     // OTP is correct apply the activation data sent from frontend
     const passwordHash = await bcrypt.hash(newPassword, 12);
 
-    user.email = email;
     user.passwordHash = passwordHash;
     user.failedLoginAttempts = 0;
     user.isLocked = false;
@@ -207,6 +206,7 @@ const verifyOTP = async (req, res) => {
     if (user.roleModel === "Student") {
       await Student.findByIdAndUpdate(user.profile, {
         isActive: true,
+        email: email,
         phone: phone,
       });
     }
@@ -214,7 +214,8 @@ const verifyOTP = async (req, res) => {
     // Clean up the OTP record
     await OTP.findOneAndDelete({ identifier });
 
-    const token = createToken(user);
+    const token = await createToken(user);
+
     return res.status(200).json({
       message: "Account activated successfully.",
       token,

@@ -34,11 +34,7 @@ const createToken = async (user) => {
       }
     }
 
-    return jwt.sign(
-      payload,
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" },
-    );
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1d" });
   } catch (error) {
     console.error("Error creating token:", error);
     throw error;
@@ -50,7 +46,7 @@ const sendOTPEmail = async (toEmail, otp) => {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: Number(process.env.EMAIL_PORT) || 587,
-      secure: false,
+      secure: Number(process.env.EMAIL_PORT) === 465, // true for port 465, false for others
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -69,7 +65,5 @@ const sendOTPEmail = async (toEmail, otp) => {
     throw error;
   }
 };
-
-
 
 module.exports = { createToken, sendOTPEmail };
