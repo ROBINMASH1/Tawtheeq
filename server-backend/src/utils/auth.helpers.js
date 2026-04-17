@@ -10,7 +10,6 @@ const createToken = async (user) => {
     }
 
     const payload = {
-      userId: user._id,
       identifier: user.identifier,
       roleModel: user.roleModel,
       name: user.name,
