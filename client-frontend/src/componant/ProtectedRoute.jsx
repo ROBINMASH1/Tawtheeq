@@ -4,7 +4,6 @@ import { useAuth } from '../context/AuthContext';
 export default function ProtectedRoute({ children, allowedRoles }) {
   const { user, loading } = useAuth();
 
-  // wait for auth to initialize before deciding
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white dark:bg-gray-950">
@@ -15,11 +14,10 @@ export default function ProtectedRoute({ children, allowedRoles }) {
     );
   }
 
-  // not logged in → go to login
   if (!user) return <Navigate to="/login" replace />;
 
-  // logged in but wrong role → go to home
-  if (allowedRoles && !allowedRoles.includes(user.role?.toLowerCase())) {
+  // use roleModel instead of role, and for uniUser also check subRole
+  if (allowedRoles && !allowedRoles.includes(user.roleModel?.toLowerCase())) {
     return <Navigate to="/" replace />;
   }
 

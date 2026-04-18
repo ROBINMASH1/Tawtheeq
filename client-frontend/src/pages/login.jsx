@@ -11,20 +11,28 @@ export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const redirectByRole = (role) => {
-    switch (role?.toLowerCase()) {
-      case "student":
-        return navigate("/student-dashboard");
-      case "moheadmin":
-        return navigate("/mohe-dashboard");
-      case "staff":
-        return navigate("/staff-dashboard");
-      case "admin":
-        return navigate("/admin-dashboard");
-      default:
-        return navigate("/");
+const redirectByRole = (decoded) => {
+  const roleModel = decoded?.roleModel?.toLowerCase();
+
+  switch (roleModel) {
+    case "student":
+      if (decoded?.isActive === false) return navigate("/profile-setup");
+      return navigate("/student-dashboard");
+
+    case "uniuser": {
+      const subRole = decoded?.subRole?.toLowerCase();
+      if (subRole === "uniadmin") return navigate("/admin-dashboard");
+      if (subRole === "unistuff") return navigate("/staff-dashboard");
+      return navigate("/");
     }
-  };
+
+    case "moheadmin":
+      return navigate("/mohe-dashboard");
+
+    default:
+      return navigate("/");
+  }
+};
 
   const handleLogin = async () => {
     setError("");
@@ -60,14 +68,13 @@ export default function Login() {
         return;
       }
 
-      redirectByRole(decoded.role);
+      redirectByRole(decoded);
     } catch {
       setError("Unable to connect to the server. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen flex">
       {/* Left — Image Panel */}

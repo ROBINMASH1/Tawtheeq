@@ -11,6 +11,7 @@ import StaffDashboard from './pages/staff-dashboard';
 import AdminDashboard from './pages/admin-dashboard';
 import ForgotPassword from './pages/forgotPassword';
 import ProtectedRoute from './componant/ProtectedRoute';
+import ProfileSetup from './pages/profile-setup';
 import ScrollToTop from './componant/scroll';
 import Test from './pages/test';
 export default function App() {
@@ -30,30 +31,39 @@ export default function App() {
         <Route path="/login" element={<Login />} className="pt-16"/>
         <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16"/>
         <Route path="/test" element={<Test />} className="pt-16"/>
+
         <Route path="/student-dashboard" element={
           <ProtectedRoute allowedRoles={['student']}>
             <StudentDashboard />
           </ProtectedRoute>
         } />
 
+                <Route path="/profile-setup" element={
+          <ProtectedRoute allowedRoles={['student']}>
+            <ProfileSetup />
+          </ProtectedRoute>
+        } />
+
         <Route path="/mohe-dashboard" element={
-          <ProtectedRoute allowedRoles={['mohe admin']}>
+          <ProtectedRoute allowedRoles={['moheadmin']}>
             <MoheDashboard />
           </ProtectedRoute>
         } />
 
         <Route path="/staff-dashboard" element={
-          <ProtectedRoute allowedRoles={['staff']}>
+          <ProtectedRoute allowedRoles={['uniuser']}>
             <StaffDashboard />
           </ProtectedRoute>
         } />
 
         <Route path="/admin-dashboard" element={
-          <ProtectedRoute allowedRoles={['admin']}>
+          <ProtectedRoute allowedRoles={['uniuser']}>
             <AdminDashboard />
           </ProtectedRoute>
         } />
+        
       </Routes>
+      
       <Footer className="pt-16"/>
     </BrowserRouter>  
     
