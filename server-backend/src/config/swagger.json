@@ -1,0 +1,449 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Tawtheeq API",
+    "version": "1.0.0",
+    "description": "API documentation for the Tawtheeq backend"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Students",
+      "description": "Student management endpoints"
+    },
+    {
+      "name": "Universities",
+      "description": "University management endpoints"
+    }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Log in to the application",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "example": "MEU_ADMIN"
+                  },
+                  "password": {
+                    "type": "string",
+                    "example": "Password123!"
+                  }
+                },
+                "required": [
+                  "identifier",
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful"
+          },
+          "400": {
+            "description": "Invalid credentials"
+          }
+        }
+      }
+    },
+    "/api/students/create": {
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Create a new student (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "personalId": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "userId": {
+                    "type": "string",
+                    "description": "ID of the user creating the student"
+                  }
+                },
+                "required": [
+                  "personalId",
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully"
+          },
+          "403": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/api/students/request-activation-otp": {
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Request an OTP for student account activation (requires Student role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "identifier",
+                  "email",
+                  "phone"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully"
+          }
+        }
+      }
+    },
+    "/api/students/verify-otp": {
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Verify the account activation OTP (requires Student role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string"
+                  },
+                  "otp": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "identifier",
+                  "otp",
+                  "email",
+                  "phone",
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Account successfully activated"
+          }
+        }
+      }
+    },
+    "/api/universities/create": {
+      "post": {
+        "tags": [
+          "Universities"
+        ],
+        "summary": "Create a newly registered university (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Middle East University"
+                  },
+                  "licenseNumber": {
+                    "type": "string",
+                    "example": "LIC-2026-X123"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "Amman, Jordan"
+                  },
+                  "contactEmail": {
+                    "type": "string",
+                    "example": "contact@meu.edu"
+                  },
+                  "Initialism": {
+                    "type": "string",
+                    "example": "MEU"
+                  },
+                  "requesterIdentifier": {
+                    "type": "string",
+                    "description": "Identifier of the MoheAdmin creating the university",
+                    "example": "MOHE_ADMIN"
+                  }
+                },
+                "required": [
+                  "name",
+                  "licenseNumber",
+                  "contactEmail",
+                  "Initialism",
+                  "requesterIdentifier"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "university": {
+                          "type": "object"
+                        },
+                        "adminCredentials": {
+                          "type": "object",
+                          "properties": {
+                            "identifier": {
+                              "type": "string"
+                            },
+                            "tempPassword": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request (Missing fields or University already exists)"
+          },
+          "403": {
+            "description": "Requester is not a Mohe Admin"
+          },
+          "404": {
+            "description": "Requester not found"
+          }
+        }
+      }
+    },
+    "/api/universities/all": {
+      "get": {
+        "tags": [
+          "Universities"
+        ],
+        "summary": "Get all universities (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "description": "Page number"
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            },
+            "description": "Number of items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of universities"
+          }
+        }
+      }
+    },
+    "/api/universities/get/{id}": {
+      "get": {
+        "tags": [
+          "Universities"
+        ],
+        "summary": "Retrieve a single university by ID (requires MoheAdmin or Uniadmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The university ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "University object found"
+          }
+        }
+      }
+    },
+    "/api/universities/update/{id}": {
+      "put": {
+        "tags": [
+          "Universities"
+        ],
+        "summary": "Update an existing university (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "contactEmail": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "University updated"
+          }
+        }
+      }
+    }
+  }
+}

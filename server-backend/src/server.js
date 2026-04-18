@@ -1,6 +1,8 @@
 const express = require("express");
 const { connectDB } = require("./config/db");
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./config/swagger.json");
 require("dotenv").config();
 
 const app = express();
@@ -14,9 +16,11 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Tawtheeq API");
 });
 
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/students", require("./routes/students"));
-//app.use("/api/universities", require("./routes/university.routes"));
+app.use("/api/universities", require("./routes/university.routes"));
 
 async function startServer() {
   try {
