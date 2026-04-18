@@ -86,7 +86,7 @@ export default function ProfileSetup() {
         headers: { "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
         },
-        body: JSON.stringify({email, phone }),
+        body: JSON.stringify({identifier: user?.identifier,email, phone }),
       });
       const data = await response.json();
       if (!response.ok) {
@@ -118,11 +118,11 @@ export default function ProfileSetup() {
           "Authorization": `Bearer ${localStorage.getItem("token")}`
          },
         body: JSON.stringify({
-          
+          identifier: user?.identifier,
           otp,
           email,
           phone,
-          password: newPassword,
+          newPassword: newPassword,
         }),
       });
       const data = await response.json();
