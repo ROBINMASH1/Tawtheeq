@@ -64,7 +64,7 @@ export default function ProfileSetup() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setOtpError(data.message || "Please check your email or phone number and try again.");
+        setOtpError(data.error || data.message || "Please check your email or phone number and try again.");
         return;
       }
       setOtpSent(true);
@@ -90,7 +90,7 @@ export default function ProfileSetup() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setVerifyError(data.message || "Failed to resend OTP.");
+        setVerifyError(data.error || data.message || "Failed to resend OTP.");
         return;
       }
       setResendCount((c) => c + 1);
@@ -127,7 +127,7 @@ export default function ProfileSetup() {
       });
       const data = await response.json();
       if (!response.ok) {
-        setVerifyError(data.message || "Invalid OTP. Please try again.");
+        setVerifyError(data.error || data.message || "Invalid OTP. Please try again.");
         return;
       }
       navigate("/student-dashboard");

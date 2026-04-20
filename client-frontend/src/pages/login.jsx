@@ -53,7 +53,7 @@ const redirectByRole = (decoded) => {
       const data = await response.json();
       console.log("Login response:", data);
       if (!response.ok) {
-        setError(data.message || "Invalid email or password.");
+        setError(data.error || data.message || "Invalid email or password.");
         return;
       }
 

@@ -51,13 +51,13 @@ export default function App() {
         } />
 
         <Route path="/staff-dashboard" element={
-          <ProtectedRoute allowedRoles={['uniuser']}>
+          <ProtectedRoute allowedsubRoles={['unistuff']}>
             <StaffDashboard />
           </ProtectedRoute>
         } />
 
         <Route path="/admin-dashboard" element={
-          <ProtectedRoute allowedRoles={['uniuser']}>
+          <ProtectedRoute allowedsubRoles={['uniadmin']}>
             <AdminDashboard />
           </ProtectedRoute>
         } />
