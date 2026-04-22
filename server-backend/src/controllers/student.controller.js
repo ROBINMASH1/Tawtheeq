@@ -16,7 +16,7 @@ const generateTempPassword = (length = 8) => {
 
 const createStudent = async (req, res) => {
   try {
-    const { personalId, name, userId } = req.body;
+    const { personalId, name } = req.body;
 
     if (!personalId || !name) {
       return res
@@ -49,7 +49,7 @@ const createStudent = async (req, res) => {
 
     await AuditLog.create({
       actionType: "CREATE_STUDENT",
-      performedBy: userId,
+      performedBy: req.user ? req.user._id : null,
       details: `Created student account with personal ID: ${trimmedId}`,
       ipAddress: req.ip || req.connection?.remoteAddress,
     });
