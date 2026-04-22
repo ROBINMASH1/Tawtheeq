@@ -50,7 +50,7 @@ const createStudent = async (req, res) => {
     await AuditLog.create({
       actionType: "CREATE_STUDENT",
       performedBy: userId,
-      details: `Created student account with personal ID: ${trimmedId} with temporary password: ${tempPassword}`,
+      details: `Created student account with personal ID: ${trimmedId}`,
       ipAddress: req.ip || req.connection?.remoteAddress,
     });
 
