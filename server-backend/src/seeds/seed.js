@@ -33,6 +33,7 @@ const moheAdminData = {
   identifier: "mohe001",
   name: "MOHE Super Admin",
   password: "Mohe@1234",
+  EmployeeID: "EMP-MOHE-001",
 };
 
 const studentData = {
@@ -98,7 +99,9 @@ async function seed() {
     console.log(`✅ User account created: ${user.identifier} (${user._id})`);
 
     // ── Create MOHEAdmin profile ───────────────────────────────────────────
-    const moheProfile = await MoheAdmin.create({});
+    const moheProfile = await MoheAdmin.create({
+      EmployeeID: moheAdminData.EmployeeID,
+    });
     console.log(`👤 MOHEAdmin profile created (${moheProfile._id})`);
 
     // ── Create MOHEAdmin User account ──────────────────────────────────────
