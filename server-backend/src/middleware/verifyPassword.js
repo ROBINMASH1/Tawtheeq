@@ -3,7 +3,7 @@ const User = require("../models/users.model");
 
 const verifyPassword = async (req, res, next) => {
   try {
-    const { password } = req.body;
+    const password = req.body?.password;
 
     if (!password) {
       return res.status(400).json({
@@ -12,7 +12,6 @@ const verifyPassword = async (req, res, next) => {
       });
     }
 
-    // authMiddleware excludes passwordHash, so re-fetch it
     const user = await User.findById(req.user._id).select("passwordHash");
     if (!user) {
       return res.status(404).json({
