@@ -21,6 +21,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/students", require("./routes/students"));
 app.use("/api/universities", require("./routes/university.routes"));
+app.use("/api/uniUsers", require("./routes/uniUsers.routes"));
 
 async function startServer() {
   try {
