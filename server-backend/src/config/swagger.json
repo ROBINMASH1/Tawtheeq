@@ -37,6 +37,10 @@
     {
       "name": "Universities",
       "description": "University management endpoints"
+    },
+    {
+      "name": "UniUsers",
+      "description": "University user management endpoints"
     }
   ],
   "paths": {
@@ -441,6 +445,230 @@
         "responses": {
           "200": {
             "description": "University updated"
+          }
+        }
+      }
+    },
+    "/api/universities/delete/{id}": {
+      "delete": {
+        "tags": [
+          "Universities"
+        ],
+        "summary": "Delete a university (requires MoheAdmin role and password verification)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "University deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/admins": {
+      "get": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Get all UniAdmins (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of UniAdmins"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/admins/{userId}/reset-password": {
+      "patch": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Reset a UniAdmin password (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/staff/create": {
+      "post": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Create a new UniStaff account (requires Uniadmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "staffName": {
+                    "type": "string"
+                  },
+                  "staffIdentifier": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "staffName",
+                  "staffIdentifier"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "UniStaff account created successfully"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/staff/all": {
+      "get": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Get all UniStaff for the caller's university (requires Uniadmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of UniStaff accounts"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/staff/{userId}/reset-password": {
+      "patch": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Reset a UniStaff password (requires Uniadmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          }
+        }
+      }
+    },
+    "/api/uniUsers/staff/{userId}": {
+      "delete": {
+        "tags": [
+          "UniUsers"
+        ],
+        "summary": "Delete a UniStaff account (requires Uniadmin role and password verification)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "password"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "UniStaff account deleted successfully"
           }
         }
       }
