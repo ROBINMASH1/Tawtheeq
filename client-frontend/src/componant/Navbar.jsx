@@ -30,6 +30,27 @@ export default function Navbar() {
     navigate('/login');
   };
 
+  const handleDashboardRedirect = () => {
+  switch (user?.roleModel?.toLowerCase()) {
+    case "student":
+      return navigate("/student-dashboard");
+
+    case "uniuser": {
+      const subRole = user?.subRole?.toLowerCase();
+      if (subRole === "uniadmin") return navigate("/admin-dashboard");
+      if (subRole === "unistuff") return navigate("/staff-dashboard");
+      return navigate("/");
+    }
+
+    case "moheadmin":
+      return navigate("/mohe-dashboard");
+
+    default:
+      return navigate("/");
+  }
+  };
+
+
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -115,6 +136,20 @@ export default function Navbar() {
         {/* Show user info + logout only when logged in */}
         {user && (
           <div className="flex items-center gap-3 ml-2 pl-3 border-l border-gray-200 dark:border-gray-700">
+            
+            <button 
+              onClick={handleDashboardRedirect}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" 
+              
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+
+              Dashboard
+            </button>
+
             <div className="flex flex-col items-end">
               <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
                 {user?.name || user?.email || 'User'}
@@ -123,6 +158,7 @@ export default function Navbar() {
             </div>
             <div className="w-9 h-9 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-sm">
               {(user?.name || user?.identifier || 'U')[0].toUpperCase()}
+              
             </div>
             <button
               onClick={handleLogout}
@@ -135,6 +171,7 @@ export default function Navbar() {
               </svg>
               Logout
             </button>
+            
           </div>
         )}
 
