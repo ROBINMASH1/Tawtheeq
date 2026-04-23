@@ -33,3 +33,4 @@ server/.env
 .env
 **/.env
 **/.env.local
+.prettierrc
