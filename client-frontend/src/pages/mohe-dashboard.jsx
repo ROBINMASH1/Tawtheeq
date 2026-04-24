@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-
+import UniversityManagementModal from '../componant/modals/UniversityManagementModal';
 export default function MoheDashboard() {
   const { user } = useAuth();
 

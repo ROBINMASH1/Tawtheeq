@@ -80,7 +80,7 @@ const redirectByRole = (decoded) => {
       {/* Left — Image Panel */}
       <div
         className="hidden lg:block w-1/2 bg-cover bg-center"
-        style={{ backgroundImage: "url('green.webp')" }}
+        style={{ backgroundImage: "url('green.png')" }}
       />
 
       {/* Right — Form Panel */}
