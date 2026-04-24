@@ -13,6 +13,7 @@ import ForgotPassword from './pages/forgotPassword';
 import ProtectedRoute from './componant/ProtectedRoute';
 import UniversityManagement from './pages/university-management';
 import ProfileSetup from './pages/profile-setup';
+import ManageAdmins from './pages/manage-admins';
 import ScrollToTop from './componant/scroll';
 import Test from './pages/test';
 export default function App() {
@@ -68,6 +69,11 @@ export default function App() {
              <UniversityManagement />
            </ProtectedRoute>
 } />
+        <Route path="/manage-admins" element={
+          <ProtectedRoute allowedRoles={["moheadmin"]}>
+            <ManageAdmins />
+          </ProtectedRoute>
+        } />
         
       </Routes>
       
