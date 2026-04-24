@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import UniversityManagementModal from '../componant/modals/UniversityManagementModal';
+import { useNavigate } from 'react-router-dom';
+
+
 export default function MoheDashboard() {
   const { user } = useAuth();
 
@@ -14,7 +16,8 @@ export default function MoheDashboard() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [statsLoading, setStatsLoading] = useState(true);
   const [logsLoading, setLogsLoading] = useState(true);
-  const [showUniversityModal, setShowUniversityModal] = useState(false);
+  const navigate = useNavigate();
+  
 
   // Fetch stats
   useEffect(() => {
@@ -146,7 +149,7 @@ export default function MoheDashboard() {
 
           {/* University Management Button */}
           <button
-            onClick={() => setShowUniversityModal(true)}
+            onClick={() => navigate('/university-management')}
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -273,10 +276,7 @@ export default function MoheDashboard() {
 
       </main>
 
-      {/* University Management Modal — imported from components */}
-      {showUniversityModal && (
-        <UniversityManagementModal onClose={() => setShowUniversityModal(false)} />
-      )}
+
 
       <style>{`
         @keyframes fadeSlideIn {

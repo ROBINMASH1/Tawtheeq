@@ -11,6 +11,7 @@ import StaffDashboard from './pages/staff-dashboard';
 import AdminDashboard from './pages/admin-dashboard';
 import ForgotPassword from './pages/forgotPassword';
 import ProtectedRoute from './componant/ProtectedRoute';
+import UniversityManagement from './pages/university-management';
 import ProfileSetup from './pages/profile-setup';
 import ScrollToTop from './componant/scroll';
 import Test from './pages/test';
@@ -61,6 +62,12 @@ export default function App() {
             <AdminDashboard />
           </ProtectedRoute>
         } />
+
+        <Route path="/university-management" element={
+          <ProtectedRoute allowedRoles={["moheadmin"]}>
+             <UniversityManagement />
+           </ProtectedRoute>
+} />
         
       </Routes>
       
