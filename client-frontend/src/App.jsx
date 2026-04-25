@@ -14,6 +14,7 @@ import ProtectedRoute from './componant/ProtectedRoute';
 import UniversityManagement from './pages/university-management';
 import ProfileSetup from './pages/profile-setup';
 import ManageAdmins from './pages/manage-admins';
+import StaffManagement from './pages/staff-management';
 import ScrollToTop from './componant/scroll';
 import Test from './pages/test';
 export default function App() {
@@ -53,7 +54,7 @@ export default function App() {
         } />
 
         <Route path="/staff-dashboard" element={
-          <ProtectedRoute allowedsubRoles={['unistuff']}>
+          <ProtectedRoute allowedsubRoles={['unistaff']}>
             <StaffDashboard />
           </ProtectedRoute>
         } />
@@ -74,6 +75,12 @@ export default function App() {
             <ManageAdmins />
           </ProtectedRoute>
         } />
+
+              <Route path="/staff-management" element={
+        <ProtectedRoute allowedsubRoles={['uniadmin']}>
+          <StaffManagement />
+        </ProtectedRoute>
+      } />
         
       </Routes>
       

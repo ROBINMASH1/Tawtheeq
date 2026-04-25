@@ -22,7 +22,7 @@ const redirectByRole = (decoded) => {
     case "uniuser": {
       const subRole = decoded?.subRole?.toLowerCase();
       if (subRole === "uniadmin") return navigate("/admin-dashboard");
-      if (subRole === "unistuff") return navigate("/staff-dashboard");
+      if (subRole === "unistaff") return navigate("/staff-dashboard");
       return navigate("/");
     }
 

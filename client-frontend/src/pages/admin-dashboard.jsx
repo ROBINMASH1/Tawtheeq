@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
-
+import { useNavigate } from "react-router-dom";
 export default function AdminDashboard() {
   const { user } = useAuth();
 
@@ -10,7 +10,7 @@ export default function AdminDashboard() {
 
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <main className="pt-20 px-8 max-w-7xl mx-auto">
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
             </button>
 
             {/* Staff Management */}
-            <button className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
+            <button onClick={() => navigate('/staff-management')} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>

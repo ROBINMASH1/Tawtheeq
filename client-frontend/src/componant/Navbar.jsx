@@ -38,7 +38,7 @@ export default function Navbar() {
     case "uniuser": {
       const subRole = user?.subRole?.toLowerCase();
       if (subRole === "uniadmin") return navigate("/admin-dashboard");
-      if (subRole === "unistuff") return navigate("/staff-dashboard");
+      if (subRole === "unistaff") return navigate("/staff-dashboard");
       return navigate("/");
     }
 
