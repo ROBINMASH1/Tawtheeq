@@ -16,7 +16,23 @@ import ProfileSetup from './pages/profile-setup';
 import ManageAdmins from './pages/manage-admins';
 import StaffManagement from './pages/staff-management';
 import ScrollToTop from './componant/scroll';
+import { useLocation } from 'react-router-dom';
 import Test from './pages/test';
+function Layout({ children }) {
+  const location = useLocation();
+
+  const hideNavbarOn = ['/profile-setup'];
+  const shouldHideNavbar = hideNavbarOn.includes(location.pathname);
+
+  return (
+    <>
+      {!shouldHideNavbar && <Navbar />}
+      <main className={!shouldHideNavbar ? 'pt-16' : ''}>
+        {children}
+      </main>
+    </>
+  );
+}
 export default function App() {
   
 
@@ -25,7 +41,9 @@ export default function App() {
     
     <BrowserRouter>
     <ScrollToTop />
-      <Navbar />
+      <Layout>
+        
+      
       
       <Routes className="pt-16" >
         
@@ -83,7 +101,7 @@ export default function App() {
       } />
         
       </Routes>
-      
+      </Layout>
       <Footer className="pt-16"/>
     </BrowserRouter>  
     

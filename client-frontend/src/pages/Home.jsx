@@ -258,7 +258,7 @@ export default function Home() {
       </section>
 
      {/* How It Works Section */}
-      <section className="bg-white dark:bg-gray-950 py-24 px-8">
+      <section className="bg-white dark:bg-gray-800 py-24 px-8">
         <div className="max-w-7xl mx-auto">
 
           {/* Heading */}
