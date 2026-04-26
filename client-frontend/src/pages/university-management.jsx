@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../config/api";
 
 
 export default function UniversityManagement() {
@@ -32,7 +33,7 @@ export default function UniversityManagement() {
   const fetchUniversities = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/universities/all", {
+      const res = await fetch(`${API_URL}/api/universities/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -77,7 +78,7 @@ export default function UniversityManagement() {
     }
     setFormLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/universities/create", {
+      const res = await fetch(`${API_URL}/api/universities/create`, {
         method: "POST", headers: authHeader,
         body: JSON.stringify({ name, licenseNumber, address, contactEmail, Initialism }),
       });
@@ -103,7 +104,7 @@ export default function UniversityManagement() {
     }
     setFormLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/universities/update/${selectedUni._id}`, {
+      const res = await fetch(`${API_URL}/api/universities/update/${selectedUni._id}`, {
         method: "PUT", headers: authHeader,
         body: JSON.stringify({ name, licenseNumber, address, contactEmail, orgId }),
       });
@@ -123,7 +124,7 @@ export default function UniversityManagement() {
     if (!deletePassword) { setDeleteError("Please enter your password."); return; }
     setDeleteLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/universities/delete/${deleteTarget._id}`, {
+      const res = await fetch(`${API_URL}/api/universities/delete/${deleteTarget._id}`, {
         method: "DELETE", headers: authHeader,
         body: JSON.stringify({ password: deletePassword }),
       });
@@ -144,7 +145,7 @@ export default function UniversityManagement() {
     setResetLoading(true);
     try {
       const userId = selectedUni?.adminUser?._id;
-      const res = await fetch(`http://localhost:5000/api/uniUsers/admins/${userId}/reset-password`, {
+      const res = await fetch(`${API_URL}/api/uniUsers/admins/${userId}/reset-password`, {
         method: "PATCH", headers: authHeader,
       });
       const data = await res.json();

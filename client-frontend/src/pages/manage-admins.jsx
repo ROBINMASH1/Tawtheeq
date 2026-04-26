@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../config/api";
 export default function ManageAdmins() {
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +20,7 @@ export default function ManageAdmins() {
   const fetchAdmins = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/uniUsers/admins", {
+      const res = await fetch(`${API_URL}/api/uniUsers/admins`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -38,7 +39,7 @@ export default function ManageAdmins() {
     setResetLoading(true);
     setResetResult(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/uniUsers/admins/${admin._id}/reset-password`, {
+      const res = await fetch(`${API_URL}/api/uniUsers/admins/${admin._id}/reset-password`, {
         method: "PATCH",
         headers: authHeader,
       });

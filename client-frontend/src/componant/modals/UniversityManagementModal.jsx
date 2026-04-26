@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import API_URL from "../../config/api";
 
 export default function UniversityManagementModal({ onClose }) {
   const [universities, setUniversities] = useState([]);
@@ -25,7 +26,7 @@ export default function UniversityManagementModal({ onClose }) {
   const fetchUniversities = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/universities/all", {
+      const res = await fetch(`${API_URL}/api/universities/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -53,7 +54,7 @@ export default function UniversityManagementModal({ onClose }) {
     }
     setFormLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/universities/create", {
+      const res = await fetch(`${API_URL}/api/universities/create`, {
         method: "POST",
         headers: authHeader,
         body: JSON.stringify({ name, licenseNumber, address, contactEmail, Initialism }),
@@ -80,7 +81,7 @@ export default function UniversityManagementModal({ onClose }) {
     }
     setFormLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/universities/update/${selectedUni._id}`, {
+      const res = await fetch(`${API_URL}/api/universities/update/${selectedUni._id}`, {
         method: "PUT",
         headers: authHeader,
         body: JSON.stringify({ name, licenseNumber, address, contactEmail, orgId }),
@@ -101,7 +102,7 @@ export default function UniversityManagementModal({ onClose }) {
     if (!deletePassword) { setDeleteError("Please enter your password."); return; }
     setDeleteLoading(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/universities/delete/${deleteTarget._id}`, {
+      const res = await fetch(`${API_URL}/api/universities/delete/${deleteTarget._id}`, {
         method: "DELETE",
         headers: authHeader,
         body: JSON.stringify({ password: deletePassword }),

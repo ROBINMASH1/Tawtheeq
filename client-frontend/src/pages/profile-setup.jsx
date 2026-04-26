@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import API_URL from "../config/api";
 
 export default function ProfileSetup() {
   const { user } = useAuth();
@@ -55,7 +56,7 @@ export default function ProfileSetup() {
     }
     setRequestLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/students/request-activation-otp", {
+      const response = await fetch(`${API_URL}/api/students/request-activation-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -81,7 +82,7 @@ export default function ProfileSetup() {
     setVerifyError("");
     setResendLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/students/request-activation-otp", {
+      const response = await fetch(`${API_URL}/api/students/request-activation-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`
@@ -112,7 +113,7 @@ export default function ProfileSetup() {
 
     setVerifyLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/students/verify-otp", {
+      const response = await fetch(`${API_URL}/api/students/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json",
           "Authorization": `Bearer ${localStorage.getItem("token")}`

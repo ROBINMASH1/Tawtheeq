@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../config/api";
 
 export default function StaffManagement() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ export default function StaffManagement() {
   const fetchStaff = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/uniUsers/staff/all", {
+      const res = await fetch(`${API_URL}/api/uniUsers/staff/all`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -51,7 +52,7 @@ export default function StaffManagement() {
     }
     setCreateLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/uniUsers/staff/create", {
+      const res = await fetch(`${API_URL}/api/uniUsers/staff/create`, {
         method: "POST",
         headers: authHeader,
         body: JSON.stringify({ staffName, staffIdentifier }),
@@ -74,7 +75,7 @@ export default function StaffManagement() {
     setResetLoading(member._id);
     setResetResult(null);
     try {
-      const res = await fetch(`http://localhost:5000/api/uniUsers/staff/${member._id}/reset-password`, {
+      const res = await fetch(`${API_URL}/api/uniUsers/staff/${member._id}/reset-password`, {
         method: "PATCH",
         headers: authHeader,
       });
@@ -93,7 +94,7 @@ export default function StaffManagement() {
   if (!deletePassword) { setDeleteError("Please enter your password."); return; }
   setDeleteLoading(deleteTarget._id);
   try {
-    const res = await fetch(`http://localhost:5000/api/uniUsers/staff/${deleteTarget._id}`, {
+    const res = await fetch(`${API_URL}/api/uniUsers/staff/${deleteTarget._id}`, {
       method: "DELETE",
       headers: authHeader,
       body: JSON.stringify({ password: deletePassword }),

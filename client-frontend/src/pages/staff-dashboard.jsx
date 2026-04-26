@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
+import API_URL from "../config/api";
 
 export default function StaffDashboard() {
   const { user } = useAuth();
@@ -27,7 +28,7 @@ export default function StaffDashboard() {
     if (!personalId || !name) { setCreateError("Both fields are required."); return; }
     setCreateLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/students/create", {
+      const res = await fetch(`${API_URL}/api/students/create`, {
         method: "POST",
         headers: authHeader,
         body: JSON.stringify({ personalId, name }),

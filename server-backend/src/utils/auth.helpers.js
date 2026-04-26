@@ -54,7 +54,7 @@ const sendOTPEmail = async (toEmail, otp) => {
     });
 
     await transporter.sendMail({
-      from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+      from: `"${process.env.EMAIL_FROM || 'Tawtheeq System'}" <${process.env.EMAIL_USER}>`,
       to: toEmail,
       subject: "Tawtheeq – Your Verification Code",
       text: `Your OTP code is: ${otp}\n\nThis code expires in 5 minutes.`,

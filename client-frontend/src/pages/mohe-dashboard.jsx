@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
+import API_URL from "../config/api";
 
 
 export default function MoheDashboard() {
@@ -23,7 +24,7 @@ export default function MoheDashboard() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/mohe/stats", {
+        const response = await fetch(`${API_URL}/api/mohe/stats`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await response.json();
@@ -41,7 +42,7 @@ export default function MoheDashboard() {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/mohe/audit-logs", {
+        const response = await fetch(`${API_URL}/api/mohe/audit-logs`, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         const data = await response.json();
