@@ -34,3 +34,5 @@ server/.env
 **/.env
 **/.env.local
 .prettierrc
+.DEPLOY.md
+.DEPLOY.md.tmp
