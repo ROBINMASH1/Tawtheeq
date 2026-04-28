@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API_URL from "../config/api";
+import LoadingScreen from "../componant/LoadingScreen";
 
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
@@ -77,7 +78,9 @@ const redirectByRole = (decoded) => {
     }
   };
   return (
+    
     <div className="min-h-screen flex">
+      {loading && <LoadingScreen />}
       {/* Left — Image Panel */}
       <div
         className="hidden lg:block w-1/2 bg-cover bg-center"

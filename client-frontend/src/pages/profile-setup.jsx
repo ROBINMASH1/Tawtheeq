@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API_URL from "../config/api";
+import LoadingScreen from "../componant/LoadingScreen";
 
 export default function ProfileSetup() {
   const { user } = useAuth();
@@ -141,6 +142,7 @@ export default function ProfileSetup() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-4 py-16">
+      {requestLoading && <LoadingScreen />}  
       <div className="w-full max-w-lg flex flex-col gap-6" style={{ animation: "fadeSlideIn 0.6s ease forwards" }}>
 
         {/* Header */}

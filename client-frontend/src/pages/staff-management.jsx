@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../config/api";
+import LoadingScreen from "../componant/LoadingScreen";
 
 export default function StaffManagement() {
   const navigate = useNavigate();
@@ -220,6 +221,7 @@ export default function StaffManagement() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      {loading && <LoadingScreen />}  
       <main className="pt-20 px-8 max-w-7xl mx-auto pb-16">
 
         {/* Header */}
