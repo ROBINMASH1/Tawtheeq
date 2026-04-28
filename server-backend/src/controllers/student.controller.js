@@ -4,6 +4,7 @@ const AuditLog = require("../models/auditLogs.model");
 const OTP = require("../models/otps.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const Certificate = require("../models/certificates.model");
 const { createToken, sendOTPEmail } = require("../utils/auth.helpers");
 
 const generateTempPassword = (length = 8) => {
@@ -46,6 +47,13 @@ const createStudent = async (req, res) => {
       roleModel: "Student",
       profile: studentProfile._id,
     });
+
+    const certificate = await Certificate.findOne({ personalId: trimmedId });
+
+    if (certificate) {
+      certificate.student = user._id;
+      await certificate.save();
+    }
 
     await AuditLog.create({
       actionType: "CREATE_STUDENT",
