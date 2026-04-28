@@ -36,3 +36,6 @@ server/.env
 .prettierrc
 .DEPLOY.md
 .DEPLOY.md.tmp
+.test-blockchain.js
+.test-ipfs.js
+.dummy.pdf
