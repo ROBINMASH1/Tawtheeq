@@ -1,0 +1,17 @@
+{
+  "name": "chaincode",
+  "version": "1.0.0",
+  "description": "Tawtheeq academic certificate chaincode for Hyperledger Fabric on Kaleido",
+  "main": "index.js",
+  "scripts": {
+    "start": "fabric-chaincode-node start",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "dependencies": {
+    "fabric-contract-api": "^2.5.0",
+    "fabric-shim": "^2.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
