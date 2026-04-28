@@ -21,6 +21,9 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/students", require("./routes/students"));
 app.use("/api/universities", require("./routes/university.routes"));
 app.use("/api/uniUsers", require("./routes/uniUsers.routes"));
+app.use("/api/certificates", require("./routes/certificates.routes"));
+app.use("/api/verify", require("./routes/verify.routes"));
+app.use("/api/audit-logs", require("./routes/auditLogs.routes"));
 
 async function startServer() {
   try {
