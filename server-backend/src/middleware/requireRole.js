@@ -3,8 +3,8 @@ const requireRole = (...roles) => {
     if (!req.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    const hasRole = roles.includes(req.user.roleModel) || 
-                    (req.user.profile && roles.includes(req.user.profile.role));
+    const hasRole = roles.includes(req.user.roleModel) ||
+      (req.user.profile && roles.includes(req.user.profile.role));
 
     if (!hasRole) {
       return res
