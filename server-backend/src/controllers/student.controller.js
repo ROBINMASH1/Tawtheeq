@@ -51,7 +51,7 @@ const createStudent = async (req, res) => {
     const certificate = await Certificate.findOne({ personalId: trimmedId });
 
     if (certificate) {
-      certificate.student = user._id;
+      certificate.user = user._id;
       await certificate.save();
     }
 
