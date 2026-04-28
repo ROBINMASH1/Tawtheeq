@@ -41,7 +41,7 @@ const parseKaleidoError = (error) => {
   return error.message || 'Unknown Error';
 };
 
-exports.issueCertificate = async (certificateId, studentPersonalId, degreeName, major, gpa, university, gradYear, pdfCid) => {
+exports.issueCertificate = async (certificateId, personalId, degreeName, major, gpa, university, gradYear, pdfCid) => {
   validateEnv();
   const config = getKaleidoConfig();
 
@@ -53,7 +53,7 @@ exports.issueCertificate = async (certificateId, studentPersonalId, degreeName, 
       chaincode: config.chaincode
     },
     func: 'issueCertificate',
-    args: [certificateId, studentPersonalId, degreeName, major, gpa, university, gradYear, pdfCid].map(arg => String(arg).trim()),
+    args: [certificateId, personalId, degreeName, major, gpa, university, gradYear, pdfCid].map(arg => String(arg).trim()),
     init: false
   };
 
