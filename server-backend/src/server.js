@@ -3,6 +3,7 @@ const { connectDB } = require("./config/db");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./config/swagger.json");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -24,6 +25,14 @@ app.use("/api/uniUsers", require("./routes/uniUsers.routes"));
 app.use("/api/certificates", require("./routes/certificates.routes"));
 app.use("/api/verify", require("./routes/verify.routes"));
 app.use("/api/audit-logs", require("./routes/auditLogs.routes"));
+
+const distPath = path.join(__dirname, "../../client-frontend/dist");
+app.use(express.static(distPath));
+
+// For any other route, serve the index.html (SPA support)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(distPath, "index.html"));
+});
 
 async function startServer() {
   try {
