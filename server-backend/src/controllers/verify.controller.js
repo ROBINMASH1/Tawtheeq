@@ -41,9 +41,7 @@ exports.verifyById = async (req, res) => {
     }
 
     res.json({
-      verified: true,
       certificate: cert,
-      blockchainData: parsedBcData
     });
   } catch (error) {
     console.error("Verification Error:", error);
