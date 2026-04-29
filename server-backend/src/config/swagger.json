@@ -41,6 +41,18 @@
     {
       "name": "UniUsers",
       "description": "University user management endpoints"
+    },
+    {
+      "name": "Certificates",
+      "description": "Certificate management and issuance endpoints"
+    },
+    {
+      "name": "Verify",
+      "description": "Public certificate verification endpoints"
+    },
+    {
+      "name": "Audit Logs",
+      "description": "System audit log endpoints"
     }
   ],
   "paths": {
@@ -669,6 +681,665 @@
         "responses": {
           "200": {
             "description": "UniStaff account deleted successfully"
+          }
+        }
+      }
+    },
+    "/api/certificates/issue": {
+      "post": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Issue a single certificate (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "studentId": {
+                    "type": "string"
+                  },
+                  "studentPersonalId": {
+                    "type": "string"
+                  },
+                  "degree": {
+                    "type": "string"
+                  },
+                  "major": {
+                    "type": "string"
+                  },
+                  "gpa": {
+                    "type": "string"
+                  },
+                  "graduationDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "studentId",
+                  "studentPersonalId",
+                  "degree",
+                  "major",
+                  "gpa",
+                  "graduationDate",
+                  "file"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Certificate issued successfully"
+          },
+          "400": {
+            "description": "Missing required fields or file"
+          },
+          "409": {
+            "description": "Certificate already issued for this student and degree"
+          },
+          "500": {
+            "description": "Failed to issue certificate"
+          }
+        }
+      }
+    },
+    "/api/certificates/my": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get logged-in student's certificates (requires Student role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of certificates"
+          },
+          "500": {
+            "description": "Failed to fetch certificates"
+          }
+        }
+      }
+    },
+    "/api/certificates/university": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get all certificates for the caller's university (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "degree",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of university certificates"
+          },
+          "500": {
+            "description": "Failed to fetch university certificates"
+          }
+        }
+      }
+    },
+    "/api/certificates/all": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get all system certificates (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "university",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of all certificates"
+          },
+          "500": {
+            "description": "Failed to fetch all certificates"
+          }
+        }
+      }
+    },
+    "/api/certificates/university/stats": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get certificate statistics for a specific university (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "University statistics"
+          },
+          "500": {
+            "description": "Failed to fetch university stats"
+          }
+        }
+      }
+    },
+    "/api/certificates/stats": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get overall system certificate statistics (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "System statistics"
+          },
+          "500": {
+            "description": "Failed to fetch system stats"
+          }
+        }
+      }
+    },
+    "/api/certificates/{certificateId}/revoke": {
+      "patch": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Revoke a specific certificate (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "reason"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Certificate revoked successfully"
+          },
+          "400": {
+            "description": "Revocation reason is required or already revoked"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "500": {
+            "description": "Failed to revoke certificate"
+          }
+        }
+      }
+    },
+    "/api/certificates/{certificateId}": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Get details of a specific certificate by ID",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate details"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "500": {
+            "description": "Failed to fetch certificate"
+          }
+        }
+      }
+    },
+    "/api/certificates/{certificateId}/download": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Download the PDF of a specific certificate",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PDF download URL and filename"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "500": {
+            "description": "Failed to process download request"
+          }
+        }
+      }
+    },
+    "/api/certificates/{certificateId}/share": {
+      "post": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Generate a public share link for a certificate (requires Student role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Share link generated"
+          },
+          "403": {
+            "description": "Access denied"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "500": {
+            "description": "Failed to generate share link"
+          }
+        }
+      }
+    },
+    "/api/certificates/bulk/preview": {
+      "post": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Preview bulk issuance data from CSV/ZIP (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "csv": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "zip": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "csv",
+                  "zip"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk preview data and session ID"
+          },
+          "400": {
+            "description": "Invalid files or format"
+          },
+          "500": {
+            "description": "Failed to process preview"
+          }
+        }
+      }
+    },
+    "/api/certificates/bulk/issue": {
+      "post": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Finalize and execute bulk issuance (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "sessionId": {
+                    "type": "string"
+                  },
+                  "confirmedRows": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "sessionId",
+                  "confirmedRows"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Bulk issuance started, returns job ID"
+          },
+          "400": {
+            "description": "Missing parameters or no valid rows"
+          },
+          "404": {
+            "description": "Session expired or not found"
+          },
+          "500": {
+            "description": "Failed to start bulk issuance"
+          }
+        }
+      }
+    },
+    "/api/certificates/bulk/job/{jobId}": {
+      "get": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Poll bulk issuance job status (requires uniUser role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job status"
+          },
+          "404": {
+            "description": "Job not found or expired"
+          },
+          "500": {
+            "description": "Failed to get job status"
+          }
+        }
+      }
+    },
+    "/api/verify/{certificateId}": {
+      "get": {
+        "tags": [
+          "Verify"
+        ],
+        "summary": "Public verification of a certificate by ID",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Certificate is valid and verified"
+          },
+          "400": {
+            "description": "Certificate revoked or invalid hash"
+          },
+          "403": {
+            "description": "Certificate is not public"
+          },
+          "404": {
+            "description": "Certificate not found"
+          },
+          "503": {
+            "description": "Verification service temporarily unavailable"
+          }
+        }
+      }
+    },
+    "/api/audit-logs": {
+      "get": {
+        "tags": [
+          "Audit Logs"
+        ],
+        "summary": "Get paginated audit logs (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "actionType",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of audit logs"
+          },
+          "500": {
+            "description": "Failed to fetch audit logs"
+          }
+        }
+      }
+    },
+    "/api/audit-logs/export": {
+      "get": {
+        "tags": [
+          "Audit Logs"
+        ],
+        "summary": "Export all audit logs (requires MoheAdmin role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All audit logs exported"
+          },
+          "500": {
+            "description": "Failed to export audit logs"
           }
         }
       }
