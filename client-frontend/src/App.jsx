@@ -5,7 +5,7 @@ import Footer from './componant/Footer';
 import Navbar from './componant/Navbar';
 import Verify from './pages/verify';
 import Login from './pages/login';
-import StudentDashboard from './pages/student-Dashboard';
+import StudentDashboard from './pages/student-dashboard';
 import MoheDashboard from './pages/mohe-dashboard';
 import StaffDashboard from './pages/staff-dashboard';
 import AdminDashboard from './pages/admin-dashboard';
@@ -34,77 +34,77 @@ function Layout({ children }) {
   );
 }
 export default function App() {
-  
+
 
   return (
-    
-    
+
+
     <BrowserRouter>
-    <ScrollToTop />
+      <ScrollToTop />
       <Layout>
-        
-      
-      
-      <Routes className="pt-16" >
-        
-        <Route path="/" element={<Home />} className="pt-16"/>
-        <Route path="/verify" element={<Verify />} className="pt-16"/>
-        <Route path="/login" element={<Login />} className="pt-16"/>
-        <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16"/>
-        <Route path="/test" element={<Test />} className="pt-16"/>
 
-        <Route path="/student-dashboard" element={
-          <ProtectedRoute allowedRoles={['student']}>
-            <StudentDashboard />
-          </ProtectedRoute>
-        } />
 
-                <Route path="/profile-setup" element={
-          <ProtectedRoute allowedRoles={['student']}>
-            <ProfileSetup />
-          </ProtectedRoute>
-        } />
 
-        <Route path="/mohe-dashboard" element={
-          <ProtectedRoute allowedRoles={['moheadmin']}>
-            <MoheDashboard />
-          </ProtectedRoute>
-        } />
+        <Routes className="pt-16" >
 
-        <Route path="/staff-dashboard" element={
-          <ProtectedRoute allowedsubRoles={['unistaff']}>
-            <StaffDashboard />
-          </ProtectedRoute>
-        } />
+          <Route path="/" element={<Home />} className="pt-16" />
+          <Route path="/verify" element={<Verify />} className="pt-16" />
+          <Route path="/login" element={<Login />} className="pt-16" />
+          <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16" />
+          <Route path="/test" element={<Test />} className="pt-16" />
 
-        <Route path="/admin-dashboard" element={
-          <ProtectedRoute allowedsubRoles={['uniadmin']}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
+          <Route path="/student-dashboard" element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <StudentDashboard />
+            </ProtectedRoute>
+          } />
 
-        <Route path="/university-management" element={
-          <ProtectedRoute allowedRoles={["moheadmin"]}>
-             <UniversityManagement />
-           </ProtectedRoute>
-} />
-        <Route path="/manage-admins" element={
-          <ProtectedRoute allowedRoles={["moheadmin"]}>
-            <ManageAdmins />
-          </ProtectedRoute>
-        } />
+          <Route path="/profile-setup" element={
+            <ProtectedRoute allowedRoles={['student']}>
+              <ProfileSetup />
+            </ProtectedRoute>
+          } />
 
-              <Route path="/staff-management" element={
-        <ProtectedRoute allowedsubRoles={['uniadmin']}>
-          <StaffManagement />
-        </ProtectedRoute>
-      } />
-        
-      </Routes>
+          <Route path="/mohe-dashboard" element={
+            <ProtectedRoute allowedRoles={['moheadmin']}>
+              <MoheDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/staff-dashboard" element={
+            <ProtectedRoute allowedsubRoles={['unistaff']}>
+              <StaffDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/admin-dashboard" element={
+            <ProtectedRoute allowedsubRoles={['uniadmin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/university-management" element={
+            <ProtectedRoute allowedRoles={["moheadmin"]}>
+              <UniversityManagement />
+            </ProtectedRoute>
+          } />
+          <Route path="/manage-admins" element={
+            <ProtectedRoute allowedRoles={["moheadmin"]}>
+              <ManageAdmins />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/staff-management" element={
+            <ProtectedRoute allowedsubRoles={['uniadmin']}>
+              <StaffManagement />
+            </ProtectedRoute>
+          } />
+
+        </Routes>
       </Layout>
-      <Footer className="pt-16"/>
-    </BrowserRouter>  
-    
+      <Footer className="pt-16" />
+    </BrowserRouter>
+
   )
 }
 
