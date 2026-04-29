@@ -30,7 +30,7 @@ const distPath = path.join(__dirname, "../../client-frontend/dist");
 app.use(express.static(distPath));
 
 // For any other route, serve the index.html (SPA support)
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
 
