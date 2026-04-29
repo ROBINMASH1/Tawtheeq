@@ -50,7 +50,7 @@ const createUniversity = async (req, res) => {
     }
 
     // Auto-generate orgId
-    const orgId = await generateOrgId();
+    const orgId = await generateOrgId(Initialism);
 
     const university = new University({
       orgId,
