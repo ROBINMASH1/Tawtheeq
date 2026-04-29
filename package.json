@@ -1,0 +1,14 @@
+{
+  "name": "tawtheeq",
+  "version": "1.0.0",
+  "description": "Tawtheeq – Full-stack deployment orchestrator",
+  "scripts": {
+    "install:backend": "cd server-backend && npm install",
+    "install:frontend": "cd client-frontend && npm install",
+    "build:frontend": "cd client-frontend && npm run build",
+    "build": "npm run install:backend && npm run install:frontend && npm run build:frontend",
+    "start": "cd server-backend && node src/server.js",
+    "dev:backend": "cd server-backend && npm run dev",
+    "dev:frontend": "cd client-frontend && npm run dev"
+  }
+}
