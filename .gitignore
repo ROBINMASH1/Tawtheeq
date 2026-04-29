@@ -39,3 +39,6 @@ server/.env
 .test-blockchain.js
 .test-ipfs.js
 .dummy.pdf
+server-backend/dummy.pdf
+server-backend/test-blockchain.js
+server-backend/test-ipfs.js
