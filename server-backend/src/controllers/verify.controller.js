@@ -13,7 +13,7 @@ exports.verifyById = async (req, res) => {
 
     if (!cert) return res.status(404).json({ error: "Certificate not found" });
 
-    if (!cert.isPublic) return res.status(403).json({ error: "Certificate is not public, the student for more information" });
+    if (!cert.isPublic) return res.status(403).json({ error: "Certificate is not public, contact the student for more information" });
 
     // Create Audit Log
     await AuditLog.create({
