@@ -1,25 +1,29 @@
 const multer = require('multer');
 
-// Configure memory storage
-const storage = multer.memoryStorage();
-
-// File filter to only accept PDFs
-const pdfFileFilter = (req, file, cb) => {
-  if (file.mimetype === 'application/pdf') {
-    cb(null, true);
-  } else {
-    cb(new Error('Invalid file type. Only PDF files are allowed.'), false);
-  }
-};
-
-// Create the Multer instance for single PDF uploads (10MB size limit)
+// Single certificate upload — PDF only, 10 MB limit
 const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10 MB
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === 'application/pdf') cb(null, true);
+    else cb(new Error('Only PDF files are allowed.'), false);
   },
-  fileFilter: pdfFileFilter,
 });
 
+// Bulk upload — CSV + ZIP, both kept in memory
+// Futuer work : we can save the files in the disk instead of memory for memory efficiency
+const bulkUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100 MB
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === 'csv' && file.mimetype === 'text/csv') cb(null, true);
+    else if (file.fieldname === 'zip' && (
+      file.mimetype === 'application/zip' ||
+      file.mimetype === 'application/x-zip-compressed' ||
+      file.mimetype === 'application/octet-stream'
+    )) cb(null, true);
+    else cb(new Error(`Invalid file type for field "${file.fieldname}"`), false);
+  },
+});
 
-module.exports = { upload };
+module.exports = { upload, bulkUpload };
