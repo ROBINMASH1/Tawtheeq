@@ -68,7 +68,7 @@ exports.issueCertificate = async (req, res) => {
 
     const txData = await blockchainService.issueCertificate(
       certificateId,
-      studentPersonalId,
+      studentId,
       degree,
       major,
       gpa,
