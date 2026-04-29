@@ -12,7 +12,7 @@ const generateTempPassword = (length = 12) => {
 };
 
 // Helper to generate a random orgId
-const generateOrgId = async () => {
+const generateOrgId = async (Initialism) => {
   let isUnique = false;
   let orgId = "";
   while (!isUnique) {
@@ -21,7 +21,7 @@ const generateOrgId = async () => {
       .toString("hex")
       .toUpperCase()
       .slice(0, 4);
-    orgId = `UNI-${randomChars}`;
+    orgId = `${Initialism}-${randomChars}`;
     const exists = await University.exists({ orgId });
     if (!exists) {
       isUnique = true;
