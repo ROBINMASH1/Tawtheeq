@@ -238,12 +238,13 @@ exports.downloadCertificate = async (req, res) => {
         break;
     }
 
-    const ipfsUrl = await ipfsService.retrieveFromIPFS(cert.ipfsHash);
+    const stream = await ipfsService.downloadFromIPFS(cert.ipfsHash);
+    const filename = `${cert.personalId}_${cert.certificateId}.pdf`;
 
-    res.json({
-      url: ipfsUrl,
-      filename: `${cert.personalId}_${cert.certificateId}.pdf`
-    });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    
+    stream.pipe(res);
   } catch (error) {
     res.status(500).json({ error: "Failed to process download request" });
   }

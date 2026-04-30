@@ -55,3 +55,30 @@ exports.retrieveFromIPFS = async (ipfsHash) => {
     throw new Error("Failed to retrieve from IPFS");
   }
 };
+
+exports.downloadFromIPFS = async (ipfsHash) => {
+  const gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  const user = process.env.IPFS_API_USER;
+  const pass = process.env.IPFS_API_PASS;
+
+  try {
+    if (!gatewayUrl) {
+      const response = await axios.get(`https://ipfs.io/ipfs/${ipfsHash}`, { responseType: 'stream' });
+      return response.data;
+    }
+
+    // This only for demo , not in production
+    const auth = Buffer.from(`${user}:${pass}`).toString('base64');
+    const response = await axios.get(`${gatewayUrl}/ipfs/${ipfsHash}`, {
+      headers: {
+        'Authorization': `Basic ${auth}`
+      },
+      responseType: 'stream'
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("IPFS Download Error:", error.message);
+    throw new Error("Failed to download from IPFS");
+  }
+};
