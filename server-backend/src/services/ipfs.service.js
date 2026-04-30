@@ -36,11 +36,19 @@ exports.uploadToIPFS = async (fileBuffer, fileName) => {
 
 exports.retrieveFromIPFS = async (ipfsHash) => {
   const gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  const user = process.env.IPFS_API_USER;
+  const pass = process.env.IPFS_API_PASS;
+
   try {
     if (!gatewayUrl) {
+
       return `https://ipfs.io/ipfs/${ipfsHash}`;
     }
-    return `${gatewayUrl}/ipfs/${ipfsHash}`;
+
+    // This bypasses the browser's credential challenge
+    // This only for demo , not in production
+    const authenticatedUrl = gatewayUrl.replace("https://", `https://${user}:${pass}@`);
+    return `${authenticatedUrl}/ipfs/${ipfsHash}`;
   }
   catch (error) {
     console.error("IPFS Retrieve Error:", error.message);
