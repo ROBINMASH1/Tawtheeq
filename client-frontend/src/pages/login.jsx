@@ -40,7 +40,7 @@ const redirectByRole = (decoded) => {
     setError("");
 
     if (!identifier || !password) {
-      setError("Please enter your email and password.");
+      setError("Please enter your National ID / Username and password.");
       return;
     }
 
@@ -55,7 +55,7 @@ const redirectByRole = (decoded) => {
       const data = await response.json();
       console.log("Login response:", data);
       if (!response.ok) {
-        setError(data.error || data.message || "Invalid email or password.");
+        setError(data.error || data.message || "Invalid National ID / Username or password.");
         return;
       }
 
@@ -137,7 +137,7 @@ const redirectByRole = (decoded) => {
             {/* Email */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Nashonal ID / Username
+                National ID / Username
               </label>
               <input
                 type="text"

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import IssueCertificateModal from '../componant/modals/IssueCertificateModal ';
 export default function AdminDashboard() {
   const { user } = useAuth();
 
@@ -10,6 +11,7 @@ export default function AdminDashboard() {
 
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [showIssueModal, setShowIssueModal] = useState(false);
   const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
@@ -33,7 +35,7 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap items-center gap-3">
 
             {/* Issue Certificate */}
-            <button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
+            <button onClick={() => setShowIssueModal(true)} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
                 <polyline points="14 2 14 8 20 8"/>
@@ -222,6 +224,7 @@ export default function AdminDashboard() {
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+      {showIssueModal && <IssueCertificateModal onClose={() => setShowIssueModal(false)} />}
     </div>
   );
 }
