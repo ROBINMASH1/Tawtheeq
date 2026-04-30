@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import API_URL from "../config/api";
+import IssueCertificateModal from '../componant/modals/IssueCertificateModal ';
 
 export default function StaffDashboard() {
   const { user } = useAuth();
@@ -18,6 +19,7 @@ export default function StaffDashboard() {
   const [createResult, setCreateResult] = useState(null);
   const [copied, setCopied] = useState({});
   const [copiedAll, setCopiedAll] = useState(false);
+    const [showIssueModal, setShowIssueModal] = useState(false);
 
   const token = localStorage.getItem("token");
   const authHeader = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
@@ -120,8 +122,9 @@ export default function StaffDashboard() {
           {/* Action Buttons */}
           <div className="flex items-center gap-3 shrink-0">
 
-            {/* Issue Certificate — empty for now */}
+            {/* Issue Certificate  */}
             <button
+              onClick={() => setShowIssueModal(true)}
               className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -400,6 +403,7 @@ export default function StaffDashboard() {
           to   { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+            {showIssueModal && <IssueCertificateModal onClose={() => setShowIssueModal(false)} />}  
     </div>
   );
 }
