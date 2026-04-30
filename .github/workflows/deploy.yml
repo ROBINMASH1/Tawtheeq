@@ -22,32 +22,24 @@ jobs:
         uses: actions/cache@v4
         with:
           path: last_commit.txt
-          key: deploy-${{ github.repository }}
+          key: ${{ steps.current.outputs.hash }}
 
-      - name: Read last commit
-        id: last
+      - name: Check if new commit
         run: |
           if [ -f last_commit.txt ]; then
-            echo "hash=$(cat last_commit.txt)" >> $GITHUB_OUTPUT
-          else
-            echo "hash=none" >> $GITHUB_OUTPUT
+            LAST=$(cat last_commit.txt)
+            if [ "$LAST" = "${{ steps.current.outputs.hash }}" ]; then
+              echo "No new commit. Skipping deploy."
+              exit 0
+            fi
           fi
 
-      - name: Deploy if changed
-        if: steps.current.outputs.hash != steps.last.outputs.hash
-        run: |
-          echo "Changes detected → deploying"
+      - name: Save new commit
+        run: echo "${{ steps.current.outputs.hash }}" > last_commit.txt
 
+      - name: Trigger DigitalOcean redeploy
+        run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.DO_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             "https://api.digitalocean.com/v2/apps/712f07e3-b3b5-40c3-85a1-1d6ede5f9d59/deployments"
-
-          echo "${{ steps.current.outputs.hash }}" > last_commit.txt
-
-      - name: Save new commit to cache
-        if: steps.current.outputs.hash != steps.last.outputs.hash
-        uses: actions/cache@v4
-        with:
-          path: last_commit.txt
-          key: deploy-${{ github.repository }}
