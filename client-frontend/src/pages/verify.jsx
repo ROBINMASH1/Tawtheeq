@@ -39,6 +39,13 @@ export default function Verify() {
 
   const isVerified = result?.status === 'verified';
 
+  // Safely convert a value that may be a populated object { _id, name } or a plain string
+  const str = (v) => {
+    if (v == null) return '—';
+    if (typeof v === 'object') return v.name ?? v.title ?? '—';
+    return String(v);
+  };
+
   const fmt = (dateStr) => {
     if (!dateStr) return '—';
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -47,13 +54,13 @@ export default function Verify() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 px-8 py-20 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 sm:px-8 py-12 sm:py-20 transition-colors duration-300">
       {loading && <LoadingScreen />}
       <div className="max-w-3xl mx-auto">
 
         {/* Page Heading */}
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-4">
             Credential Verification Portal
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-lg">
@@ -62,11 +69,11 @@ export default function Verify() {
         </div>
 
         {/* Search Card */}
-        <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-8 shadow-sm mb-6 transition-colors duration-300">
+        <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-sm mb-6 transition-colors duration-300">
           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
             Certificate ID
           </label>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <input
               type="text"
               value={certId}
@@ -78,7 +85,7 @@ export default function Verify() {
             <button
               onClick={handleVerify}
               disabled={loading}
-              className="flex items-center gap-2 bg-green-500 hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl transition-colors"
+              className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold px-6 py-3 rounded-xl transition-colors sm:w-auto w-full"
             >
               {loading ? (
                 <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -114,7 +121,7 @@ export default function Verify() {
             style={{ animation: 'fadeSlideIn 0.4s ease forwards' }}
           >
             {/* Result heading */}
-            <div className="px-8 pt-8 pb-4 border-b border-gray-100 dark:border-gray-800">
+            <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-gray-100 dark:border-gray-800">
               <h2 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-1">
                 Verification Results
               </h2>
@@ -123,7 +130,7 @@ export default function Verify() {
               </p>
             </div>
 
-            <div className="px-8 py-6 flex flex-col gap-6">
+            <div className="px-4 sm:px-8 py-4 sm:py-6 flex flex-col gap-6">
 
               {/* Status row */}
               <div className="flex items-center gap-3">
@@ -154,11 +161,11 @@ export default function Verify() {
               {/* Details grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                 {[
-                  { label: 'Certificate ID', value: result.certificateId },
+                  { label: 'Certificate ID', value: result.certificateId ?? '—' },
                   { label: 'Student Name', value: result.user?.name ?? '—' },
-                  { label: 'University Name', value: result.university ?? '—' },
-                  { label: 'Degree', value: result.degree ?? '—' },
-                  { label: 'Student Major', value: result.major ?? '—' },
+                  { label: 'University Name', value: str(result.university) },
+                  { label: 'Degree', value: str(result.degree) },
+                  { label: 'Student Major', value: str(result.major) },
                   { label: 'GPA', value: result.gpa != null ? result.gpa.toFixed(2) : '—' },
                   { label: 'Graduation Date', value: fmt(result.graduationDate) },
                 ].map(({ label, value }) => (
@@ -199,7 +206,7 @@ export default function Verify() {
 
         {/* How Verification Works — hidden once a result is shown */}
         {!result && (
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-8 shadow-sm transition-colors duration-300">
+          <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-sm transition-colors duration-300">
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
               How Verification Works
             </h2>
