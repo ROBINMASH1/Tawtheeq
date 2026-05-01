@@ -29,7 +29,7 @@ function Toast({ toast, onClick }) {
       </div>
       <div>
         <p className="text-sm font-bold">{toast.success ? "Certificate Issued!" : "Issuance Failed"}</p>
-        <p className="text-xs mt-0.5 opacity-80">Click to view details</p>
+        {toast.data && <p className="text-xs mt-0.5 opacity-80">Click to view details</p>}
       </div>
     </div>
   );
@@ -164,13 +164,28 @@ export default function IssueCertificateModal({ onClose }) {
       const res = await fetch(`${API_URL}/api/certificates/issue`, {
         method: "POST", headers: authHeader, body: fd,
       });
-      const data = await res.json();
-      if (!res.ok) { setSingleError(data.message || "Failed to issue certificate."); showToast(false); return; }
+      
+      let data;
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(text || "Server returned non-JSON response");
+      }
+
+      if (!res.ok) {
+        setSingleError(data.error || data.message || "Failed to issue certificate.");
+        showToast(false);
+        return;
+      }
       showToast(true, data);
       setSingleForm({ studentId: "", studentPersonalId: "", degree: "", major: "", gpa: "", graduationDate: "" });
       setPdfFile(null);
-    } catch {
-      setSingleError("Server error. Please try again."); showToast(false);
+    } catch (err) {
+      console.error("Single Issuance Error:", err);
+      setSingleError(err.message || "Server error. Please try again.");
+      showToast(false);
     } finally {
       setSingleLoading(false);
     }
@@ -193,10 +208,11 @@ export default function IssueCertificateModal({ onClose }) {
         method: "POST", headers: authHeader, body: fd,
       });
       const data = await res.json();
-      if (!res.ok) { setBulkError(data.errer || data.message || "Preview failed."); return; }
+      if (!res.ok) { setBulkError(data.message || "Preview failed."); return; }
       setPreviewData(data);
-    } catch {
-      setBulkError("Server error. Please try again.");
+    } catch (err) {
+      console.error("Bulk Preview Error:", err);
+      setBulkError(err.message || "Server error. Please try again.");
     } finally {
       setPreviewLoading(false);
     }
@@ -213,11 +229,12 @@ export default function IssueCertificateModal({ onClose }) {
         body: JSON.stringify({ sessionId: previewData.sessionId, confirmedRows: previewData.confirmedRows }),
       });
       const data = await res.json();
-      if (!res.ok) { setBulkError(data.error || data.message || "Bulk issue failed."); return; }
+      if (!res.ok) { setBulkError(data.message || "Bulk issue failed."); return; }
       setBulkIssueResult(data);
       startPolling(data.jobId);
-    } catch {
-      setBulkError("Server error. Please try again.");
+    } catch (err) {
+      console.error("Bulk Issue Error:", err);
+      setBulkError(err.message || "Server error. Please try again.");
     } finally {
       setIssueLoading(false);
     }
@@ -505,7 +522,7 @@ export default function IssueCertificateModal({ onClose }) {
                           <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                             <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{row.rowIndex ?? i + 1}</td>
                             <td className="px-4 py-3 text-gray-800 dark:text-gray-200 font-medium">{row.studentId || "—"}</td>
-                            <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{row.name || "—"}</td>
+                            <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{row.studentName || row.name || "—"}</td>
                             <td className="px-4 py-3">
                               <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                                 row.status === "valid"
