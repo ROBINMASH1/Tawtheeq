@@ -69,7 +69,7 @@ export default function StudentDashboard() {
       });
       const data = await res.json();
       if (!res.ok) { alert(data.message || 'Share failed.'); return; }
-      setShareResult({ link: data.link || data.url || data.shareUrl, certId: cert.certificateId });
+      setShareResult({ link: data.shareLink || data.link || data.url || data.shareUrl, certId: cert.certificateId });
     } catch {
       alert('Share failed. Please try again.');
     } finally {
