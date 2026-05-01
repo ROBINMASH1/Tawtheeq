@@ -1,6 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import API_URL from "../../config/api";
 
+// ── Persistent Job Storage Key ────────────────────────────────────────────────
+const BULK_JOB_KEY = "tawtheeq_bulk_job";
+
+const getStoredJob = () => {
+  try {
+    const saved = localStorage.getItem(BULK_JOB_KEY);
+    return saved ? JSON.parse(saved) : null;
+  } catch {
+    return null;
+  }
+};
+
 // ── Toast Banner ──────────────────────────────────────────────────────────────
 function Toast({ toast, onClick }) {
   if (!toast) return null;
@@ -29,7 +41,7 @@ function Toast({ toast, onClick }) {
       </div>
       <div>
         <p className="text-sm font-bold">{toast.success ? "Certificate Issued!" : "Issuance Failed"}</p>
-                {toast.data && <p className="text-xs mt-0.5 opacity-80">Click to view details</p>}
+        {toast.data && <p className="text-xs mt-0.5 opacity-80">Click to view details</p>}
       </div>
     </div>
   );
@@ -103,7 +115,8 @@ export default function IssueCertificateModal({ onClose }) {
   const token = localStorage.getItem("token");
   const authHeader = { Authorization: `Bearer ${token}` };
 
-  const [mode, setMode] = useState(null); // null | "single" | "bulk"
+  // ── Initialize mode & bulk state from localStorage (lazy init — no flash) ──
+  const [mode, setMode] = useState(() => (getStoredJob() ? "bulk" : null));
 
   // Single
   const [singleForm, setSingleForm] = useState({ studentId: "", studentPersonalId: "", degree: "", major: "", gpa: "", graduationDate: "" });
@@ -114,19 +127,34 @@ export default function IssueCertificateModal({ onClose }) {
   const [detailData, setDetailData] = useState(null);
   const toastTimer = useRef(null);
 
-  // Bulk
+  // Bulk — initialized from localStorage so progress view is immediate on remount
   const [csvFile, setCsvFile] = useState(null);
   const [zipFile, setZipFile] = useState(null);
   const [bulkError, setBulkError] = useState("");
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
   const [issueLoading, setIssueLoading] = useState(false);
-  const [bulkIssueResult, setBulkIssueResult] = useState(null);
-  const [jobProgress, setJobProgress] = useState(null);
-  const [jobDone, setJobDone] = useState(false);
+  const [bulkIssueResult, setBulkIssueResult] = useState(() => getStoredJob()?.bulkIssueResult ?? null);
+  const [jobProgress, setJobProgress] = useState(() => getStoredJob()?.jobProgress ?? null);
+  const [jobDone, setJobDone] = useState(() => getStoredJob()?.jobDone ?? false);
   const pollRef = useRef(null);
 
-  useEffect(() => () => { clearTimeout(toastTimer.current); clearInterval(pollRef.current); }, []);
+  // isJobBlocking: a job result exists and has not been finalized via "Done".
+  // While true: back button hidden, upload/preview screens locked out.
+  const isJobBlocking = !!bulkIssueResult;
+
+  // ── Mount: resume polling if stored job is still running ──────────────────
+  useEffect(() => {
+    const job = getStoredJob();
+    if (job && !job.jobDone) {
+      startPolling(job.jobId, job.bulkIssueResult);
+    }
+    return () => {
+      clearTimeout(toastTimer.current);
+      clearInterval(pollRef.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const showToast = (success, data) => {
     setToast({ success, data });
@@ -251,8 +279,17 @@ export default function IssueCertificateModal({ onClose }) {
         setBulkError(data.error || data.message || "Bulk issue failed.");
         return;
       }
+
+      // Persist job to localStorage — survives modal close/reopen
+      localStorage.setItem(BULK_JOB_KEY, JSON.stringify({
+        jobId: data.jobId,
+        bulkIssueResult: data,
+        jobProgress: null,
+        jobDone: false,
+      }));
+
       setBulkIssueResult(data);
-      startPolling(data.jobId);
+      startPolling(data.jobId, data);
     } catch (err) {
       console.error("Bulk Issue Error:", err);
       setBulkError(err.message || "Server error. Please try again.");
@@ -262,7 +299,10 @@ export default function IssueCertificateModal({ onClose }) {
   };
 
   // ── Poll Job Status ────────────────────────────────────────────────────────
-  const startPolling = (jobId) => {
+  // Accepts initialResult so the final localStorage snapshot is self-contained.
+  // Polling stops on unmount (cleanup) and restarts on remount (mount effect).
+  const startPolling = (jobId, initialResult) => {
+    clearInterval(pollRef.current);
     pollRef.current = setInterval(async () => {
       try {
         const res = await fetch(`${API_URL}/api/certificates/bulk/job/${jobId}`, {
@@ -273,12 +313,33 @@ export default function IssueCertificateModal({ onClose }) {
         if (data.status === "done" || data.status === "failed") {
           clearInterval(pollRef.current);
           setJobDone(true);
+          // Persist final state so the user can review results after reopening modal
+          localStorage.setItem(BULK_JOB_KEY, JSON.stringify({
+            jobId,
+            bulkIssueResult: initialResult,
+            jobProgress: data,
+            jobDone: true,
+          }));
         }
       } catch {
         clearInterval(pollRef.current);
         setJobDone(true);
       }
     }, 1000);
+  };
+
+  // ── Done: full reset — clears job session and unlocks upload screen ────────
+  const handleBulkDone = () => {
+    clearInterval(pollRef.current);
+    localStorage.removeItem(BULK_JOB_KEY);
+    setBulkIssueResult(null);
+    setJobProgress(null);
+    setJobDone(false);
+    setBulkError("");
+    setCsvFile(null);
+    setZipFile(null);
+    setPreviewData(null);
+    setMode(null); // Return to mode selection
   };
 
   const progressPercent = jobProgress
@@ -295,7 +356,8 @@ export default function IssueCertificateModal({ onClose }) {
           {/* Header */}
           <div className="flex items-center justify-between mb-8 pt-4">
             <div className="flex items-center gap-4">
-              {mode && (
+              {/* Back button hidden while a job is blocking (active or done-but-not-cleared) */}
+              {mode && !isJobBlocking && (
                 <button
                   onClick={() => { setMode(null); setSingleError(""); setBulkError(""); setPreviewData(null); setBulkIssueResult(null); setJobProgress(null); setJobDone(false); clearInterval(pollRef.current); }}
                   className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center shadow-sm transition-colors"
@@ -324,6 +386,7 @@ export default function IssueCertificateModal({ onClose }) {
                 </div>
               </div>
             </div>
+            {/* X always works — closing does NOT stop backend processing */}
             <button
               onClick={onClose}
               className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center shadow-sm transition-colors"
@@ -439,7 +502,20 @@ export default function IssueCertificateModal({ onClose }) {
           {mode === "bulk" && (
             <div className="flex flex-col gap-5" style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
 
-              {/* File upload section */}
+              {/* Running job banner */}
+              {isJobBlocking && !jobDone && (
+                <div className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
+                  <svg className="w-5 h-5 text-blue-500 animate-spin shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                  </svg>
+                  <div>
+                    <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Bulk job running in background</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5">You may close this modal — issuance continues on the server. Reopen to check progress.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* File upload section — hidden while a job is blocking */}
               {!bulkIssueResult && (
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -507,7 +583,7 @@ export default function IssueCertificateModal({ onClose }) {
                 </div>
               )}
 
-              {/* Preview Results */}
+              {/* Preview Results — hidden while a job is blocking */}
               {previewData && !bulkIssueResult && (
                 <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm flex flex-col gap-5" style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
                   <h3 className="text-base font-extrabold text-gray-900 dark:text-white">Preview Results</h3>
@@ -590,6 +666,16 @@ export default function IssueCertificateModal({ onClose }) {
                     </div>
                   </div>
 
+                  {/* Waiting for first poll */}
+                  {!jobProgress && (
+                    <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                      <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                      </svg>
+                      Connecting to job status...
+                    </div>
+                  )}
+
                   {/* Progress bar */}
                   {jobProgress && (
                     <div className="flex flex-col gap-3">
@@ -668,9 +754,10 @@ export default function IssueCertificateModal({ onClose }) {
                         </div>
                       )}
 
+                      {/* Done — clears job session and unlocks upload screen */}
                       {jobDone && (
                         <button
-                          onClick={onClose}
+                          onClick={handleBulkDone}
                           className="w-full bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all mt-2"
                         >
                           Done
