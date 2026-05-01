@@ -346,6 +346,16 @@ export default function IssueCertificateModal({ onClose }) {
     ? Math.round((jobProgress.processed / jobProgress.total) * 100)
     : 0;
 
+  const PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+  const [pageSize, setPageSize] = useState(20);
+  const [previewPage, setPreviewPage] = useState(1);
+  const [resultsPage, setResultsPage] = useState(1);
+
+  // Reset pages when data or page size changes
+  useEffect(() => { setPreviewPage(1); }, [previewData]);
+  useEffect(() => { setResultsPage(1); }, [jobDone]);
+  useEffect(() => { setPreviewPage(1); setResultsPage(1); }, [pageSize]);
+
 
   return (
     <>
@@ -603,39 +613,90 @@ export default function IssueCertificateModal({ onClose }) {
                   </div>
 
                   {/* Rows table */}
-                  <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-gray-50 dark:bg-gray-800 text-left">
-                          <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Row</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Student ID</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Name</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                          <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Error</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                        {previewData.rows.map((row, i) => (
-                          <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
-                            <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{row.rowIndex ?? i + 1}</td>
-                            <td className="px-4 py-3 text-gray-800 dark:text-gray-200 font-medium">{row.studentId || "—"}</td>
-                            <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{row.studentName || row.name || "—"}</td>
-                            <td className="px-4 py-3">
-                              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                row.status === "valid"
-                                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                  : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                              }`}>
-                                <span className={`w-1.5 h-1.5 rounded-full ${row.status === "valid" ? "bg-green-500" : "bg-red-500"}`} />
-                                {row.status}
+                  {(() => {
+                    const totalPreviewPages = Math.ceil(previewData.rows.length / pageSize);
+                    const pagedRows = previewData.rows.slice((previewPage - 1) * pageSize, previewPage * pageSize);
+                    return (
+                      <>
+                        <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="bg-gray-50 dark:bg-gray-800 text-left">
+                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Row</th>
+                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Student ID</th>
+                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Name</th>
+                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Error</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                              {pagedRows.map((row, i) => (
+                                <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{row.rowIndex ?? (previewPage - 1) * pageSize + i + 1}</td>
+                                  <td className="px-4 py-3 text-gray-800 dark:text-gray-200 font-medium">{row.studentId || "—"}</td>
+                                  <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{row.studentName || row.name || "—"}</td>
+                                  <td className="px-4 py-3">
+                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                      row.status === "valid"
+                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                        : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                                    }`}>
+                                      <span className={`w-1.5 h-1.5 rounded-full ${row.status === "valid" ? "bg-green-500" : "bg-red-500"}`} />
+                                      {row.status}
+                                    </span>
+                                  </td>
+                                  <td className="px-4 py-3 text-xs text-red-500 dark:text-red-400">{row.error || "—"}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        {previewData.rows.length > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {totalPreviewPages > 1 ? `Page ${previewPage} of ${totalPreviewPages} · ` : ""}{previewData.rows.length} rows
                               </span>
-                            </td>
-                            <td className="px-4 py-3 text-xs text-red-500 dark:text-red-400">{row.error || "—"}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                              <select
+                                value={pageSize}
+                                onChange={(e) => setPageSize(Number(e.target.value))}
+                                className="text-xs border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              >
+                                {PAGE_SIZE_OPTIONS.map(n => <option key={n} value={n}>{n} / page</option>)}
+                              </select>
+                            </div>
+                            {totalPreviewPages > 1 && (
+                              <div className="flex items-center gap-1">
+                                <button onClick={() => setPreviewPage(p => Math.max(1, p - 1))} disabled={previewPage === 1}
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                </button>
+                                {Array.from({ length: totalPreviewPages }, (_, i) => i + 1)
+                                  .filter(p => p === 1 || p === totalPreviewPages || Math.abs(p - previewPage) <= 1)
+                                  .reduce((acc, p, idx, arr) => {
+                                    if (idx > 0 && p - arr[idx - 1] > 1) acc.push("…");
+                                    acc.push(p);
+                                    return acc;
+                                  }, [])
+                                  .map((item, idx) =>
+                                    item === "…"
+                                      ? <span key={`e${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs">…</span>
+                                      : <button key={item} onClick={() => setPreviewPage(item)}
+                                          className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${previewPage === item ? "bg-blue-600 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
+                                          {item}
+                                        </button>
+                                  )}
+                                <button onClick={() => setPreviewPage(p => Math.min(totalPreviewPages, p + 1))} disabled={previewPage === totalPreviewPages}
+                                  className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    );
+                  })()}
 
                   <button
                     onClick={handleBulkIssue}
@@ -720,39 +781,86 @@ export default function IssueCertificateModal({ onClose }) {
                       )}
 
                       {/* Results table when done */}
-                      {jobDone && jobProgress.results?.length > 0 && (
-                        <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800 mt-2">
-                          <table className="w-full text-sm">
-                            <thead>
-                              <tr className="bg-gray-50 dark:bg-gray-800 text-left">
-                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Row</th>
-                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Certificate ID</th>
-                                <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Error</th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                              {jobProgress.results.map((r, i) => (
-                                <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
-                                  <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{r.rowIndex ?? i + 1}</td>
-                                  <td className="px-4 py-3">
-                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                      r.status === "success"
-                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                        : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                                    }`}>
-                                      <span className={`w-1.5 h-1.5 rounded-full ${r.status === "success" ? "bg-green-500" : "bg-red-500"}`} />
-                                      {r.status}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3 text-xs text-green-600 dark:text-green-400 font-mono">{r.certificateId || "—"}</td>
-                                  <td className="px-4 py-3 text-xs text-red-500 dark:text-red-400">{r.error || "—"}</td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
+                      {jobDone && jobProgress.results?.length > 0 && (() => {
+                        const totalResultsPages = Math.ceil(jobProgress.results.length / pageSize);
+                        const pagedResults = jobProgress.results.slice((resultsPage - 1) * pageSize, resultsPage * pageSize);
+                        return (
+                          <div className="flex flex-col gap-3 mt-2">
+                            <div className="overflow-x-auto rounded-xl border border-gray-100 dark:border-gray-800">
+                              <table className="w-full text-sm">
+                                <thead>
+                                  <tr className="bg-gray-50 dark:bg-gray-800 text-left">
+                                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Row</th>
+                                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Certificate ID</th>
+                                    <th className="px-4 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Error</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                                  {pagedResults.map((r, i) => (
+                                    <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
+                                      <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{r.rowIndex ?? (resultsPage - 1) * pageSize + i + 1}</td>
+                                      <td className="px-4 py-3">
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
+                                          r.status === "success"
+                                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                            : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                                        }`}>
+                                          <span className={`w-1.5 h-1.5 rounded-full ${r.status === "success" ? "bg-green-500" : "bg-red-500"}`} />
+                                          {r.status}
+                                        </span>
+                                      </td>
+                                      <td className="px-4 py-3 text-xs text-green-600 dark:text-green-400 font-mono">{r.certificateId || "—"}</td>
+                                      <td className="px-4 py-3 text-xs text-red-500 dark:text-red-400">{r.error || "—"}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                  {totalResultsPages > 1 ? `Page ${resultsPage} of ${totalResultsPages} · ` : ""}{jobProgress.results.length} rows
+                                </span>
+                                <select
+                                  value={pageSize}
+                                  onChange={(e) => setPageSize(Number(e.target.value))}
+                                  className="text-xs border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-green-400"
+                                >
+                                  {PAGE_SIZE_OPTIONS.map(n => <option key={n} value={n}>{n} / page</option>)}
+                                </select>
+                              </div>
+                              {totalResultsPages > 1 && (
+                                <div className="flex items-center gap-1">
+                                  <button onClick={() => setResultsPage(p => Math.max(1, p - 1))} disabled={resultsPage === 1}
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                  </button>
+                                  {Array.from({ length: totalResultsPages }, (_, i) => i + 1)
+                                    .filter(p => p === 1 || p === totalResultsPages || Math.abs(p - resultsPage) <= 1)
+                                    .reduce((acc, p, idx, arr) => {
+                                      if (idx > 0 && p - arr[idx - 1] > 1) acc.push("…");
+                                      acc.push(p);
+                                      return acc;
+                                    }, [])
+                                    .map((item, idx) =>
+                                      item === "…"
+                                        ? <span key={`e${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs">…</span>
+                                        : <button key={item} onClick={() => setResultsPage(item)}
+                                            className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${resultsPage === item ? "bg-green-500 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
+                                            {item}
+                                          </button>
+                                    )}
+                                  <button onClick={() => setResultsPage(p => Math.min(totalResultsPages, p + 1))} disabled={resultsPage === totalResultsPages}
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })()}
 
                       {/* Done — clears job session and unlocks upload screen */}
                       {jobDone && (
