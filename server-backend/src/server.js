@@ -18,8 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api/students", require("./routes/students"));
+app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/students", require("./routes/students.routes"));
 app.use("/api/universities", require("./routes/university.routes"));
 app.use("/api/uniUsers", require("./routes/uniUsers.routes"));
 app.use("/api/certificates", require("./routes/certificates.routes"));
