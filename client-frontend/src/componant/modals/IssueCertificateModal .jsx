@@ -75,6 +75,29 @@ function DetailBox({ data, onClose }) {
   );
 }
 
+// ── Input Field ──────────────────────────────────────────────────────────────
+function InputField({ label, value, onChange, placeholder, type = "text", maxLength, min, max, step, inputMode, required }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+        {label} {required && <span className="text-red-400">*</span>}
+      </label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        maxLength={maxLength}
+        min={min}
+        max={max}
+        step={step}
+        inputMode={inputMode}
+        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 transition text-sm"
+      />
+    </div>
+  );
+}
+
 // ── Main Modal ────────────────────────────────────────────────────────────────
 export default function IssueCertificateModal({ onClose }) {
   const token = localStorage.getItem("token");
@@ -170,7 +193,7 @@ export default function IssueCertificateModal({ onClose }) {
         method: "POST", headers: authHeader, body: fd,
       });
       const data = await res.json();
-      if (!res.ok) { setBulkError(data.message || "Preview failed."); return; }
+      if (!res.ok) { setBulkError(data.errer || data.message || "Preview failed."); return; }
       setPreviewData(data);
     } catch {
       setBulkError("Server error. Please try again.");
@@ -190,7 +213,7 @@ export default function IssueCertificateModal({ onClose }) {
         body: JSON.stringify({ sessionId: previewData.sessionId, confirmedRows: previewData.confirmedRows }),
       });
       const data = await res.json();
-      if (!res.ok) { setBulkError(data.message || "Bulk issue failed."); return; }
+      if (!res.ok) { setBulkError(data.error || data.message || "Bulk issue failed."); return; }
       setBulkIssueResult(data);
       startPolling(data.jobId);
     } catch {
@@ -224,21 +247,6 @@ export default function IssueCertificateModal({ onClose }) {
     ? Math.round((jobProgress.processed / jobProgress.total) * 100)
     : 0;
 
-  const InputField = ({ label, name, placeholder, type = "text", maxLength, required }) => (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-        {label} {required && <span className="text-red-400">*</span>}
-      </label>
-      <input
-        type={type}
-        value={singleForm[name]}
-        onChange={(e) => setSingleForm((p) => ({ ...p, [name]: e.target.value }))}
-        placeholder={placeholder}
-        maxLength={maxLength}
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 transition text-sm"
-      />
-    </div>
-  );
 
   return (
     <>
@@ -333,12 +341,12 @@ export default function IssueCertificateModal({ onClose }) {
           {mode === "single" && (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm" style={{ animation: "fadeSlideIn 0.4s ease forwards" }}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <InputField label="Student ID" name="studentId" placeholder="9-digit student ID" maxLength={9} required />
-                <InputField label="Student Personal ID" name="studentPersonalId" placeholder="10-digit personal ID" maxLength={10} required />
-                <InputField label="Degree" name="degree" placeholder="e.g. Bachelor of Science" required />
-                <InputField label="Major" name="major" placeholder="e.g. Computer Science" required />
-                <InputField label="GPA" name="gpa" placeholder="e.g. 3.85" required />
-                <InputField label="Graduation Date" name="graduationDate" type="date" required />
+                <InputField label="Student ID" value={singleForm.studentId} onChange={(e) => setSingleForm((p) => ({ ...p, studentId: e.target.value.replace(/\D/g, "") }))} placeholder="9-digit student ID" maxLength={9} inputMode="numeric" required />
+                <InputField label="Student Personal ID" value={singleForm.studentPersonalId} onChange={(e) => setSingleForm((p) => ({ ...p, studentPersonalId: e.target.value.replace(/\D/g, "") }))} placeholder="10-digit personal ID" maxLength={10} inputMode="numeric" required />
+                <InputField label="Degree" value={singleForm.degree} onChange={(e) => setSingleForm((p) => ({ ...p, degree: e.target.value }))} placeholder="e.g. Bachelor of Science" required />
+                <InputField label="Major" value={singleForm.major} onChange={(e) => setSingleForm((p) => ({ ...p, major: e.target.value }))} placeholder="e.g. Computer Science" required />
+                <InputField label="GPA" type="number" value={singleForm.gpa} onChange={(e) => { const v = e.target.value; if (v === "" || (parseFloat(v) >= 0 && parseFloat(v) <= 4.0)) setSingleForm((p) => ({ ...p, gpa: v })); }} placeholder="0.00 – 4.00" min={0} max={4} step={0.01} inputMode="decimal" required />
+                <InputField label="Graduation Date" value={singleForm.graduationDate} onChange={(e) => setSingleForm((p) => ({ ...p, graduationDate: e.target.value }))} type="date" required />
 
                 {/* PDF Upload */}
                 <div className="md:col-span-2 flex flex-col gap-1.5">
