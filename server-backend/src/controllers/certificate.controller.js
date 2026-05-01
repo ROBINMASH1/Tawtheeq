@@ -217,6 +217,36 @@ exports.getCertificateById = async (req, res) => {
   }
 };
 
+exports.setCertificateStatus = async (req, res) => {
+  try {
+    const { certificateId } = req.params;
+    const { isPublic } = req.body; //true or false
+
+    const cert = await Certificate.findOne({ certificateId });
+    if (!cert) return res.status(404).json({ error: "Certificate not found" });
+
+    if (cert.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Access denied to set certificate status for another student" });
+    }
+
+    cert.isPublic = isPublic;
+    await cert.save();
+
+    await AuditLog.create({
+      actionType: "SET_CERTIFICATE_STATUS",
+      performedBy: req.user._id,
+      targetId: cert._id,
+      details: `Set certificate ${certificateId} isPublic status to ${isPublic}`,
+      ipAddress: req.ip
+    });
+
+    res.json({ success: true, message: "Certificate status set successfully", cert });
+  } catch (error) {
+    console.error("Set certificate status Error:", error);
+    res.status(500).json({ error: "Failed to set certificate status" });
+  }
+}
+
 // GET /:certificateId/download
 exports.downloadCertificate = async (req, res) => {
   try {
@@ -243,7 +273,7 @@ exports.downloadCertificate = async (req, res) => {
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    
+
     stream.pipe(res);
   } catch (error) {
     res.status(500).json({ error: "Failed to process download request" });

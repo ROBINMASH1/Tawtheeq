@@ -40,15 +40,18 @@ router.get('/:certificateId/download', authMiddleware, certController.downloadCe
 // 10. Generate a public share link for a certificate (Student only)
 router.post('/:certificateId/share', authMiddleware, requireRole('Student'), certController.shareCertificate);
 
+//11 Set certificate status
+router.patch('/:certificateId/status', authMiddleware, requireRole('Student'), certController.setCertificateStatus);
+
 //  BULK ISSUANCE ROUTES
 
-// 11. Preview bulk issuance data from CSV/ZIP (uniUser only)
+// 13. Preview bulk issuance data from CSV/ZIP (uniUser only)
 router.post('/bulk/preview', authMiddleware, requireRole('uniUser'), enforceUniversityScope, bulkUpload.fields([{ name: 'csv', maxCount: 1 }, { name: 'zip', maxCount: 1 }]), bulkIssuanceController.bulkPreview);
 
-// 12. Finalize and execute bulk issuance (uniUser only) — responds immediately with jobId
+// 14. Finalize and execute bulk issuance (uniUser only) — responds immediately with jobId
 router.post('/bulk/issue', authMiddleware, requireRole('uniUser'), enforceUniversityScope, bulkIssuanceController.bulkIssue);
 
-// 13. Poll bulk issuance job status (uniUser only)
+// 15. Poll bulk issuance job status (uniUser only)
 router.get('/bulk/job/:jobId', authMiddleware, requireRole('uniUser'), bulkIssuanceController.bulkJobStatus);
 
 

@@ -141,12 +141,109 @@ const requestActivationOTP = async (req, res) => {
   }
 };
 
+const sendOTPForgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email is required" });
+    }
+
+    const studentProfile = await Student.findOne({ email });
+    if (!studentProfile) {
+      return res.status(404).json({ error: "Student profile not found" });
+    }
+
+    const user = await User.findOne({ profile: studentProfile._id });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Only students can go through the activation flow
+    if (user.roleModel !== "Student") {
+      return res
+        .status(400)
+        .json({ error: "Only student accounts can be activated" });
+    }
+
+    // Generate and send a 6-digit OTP.
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    await OTP.findOneAndDelete({ identifier: user.identifier }); // clear any old OTP
+    await OTP.create({ identifier: user.identifier, otp });
+
+    // Send OTP via email
+    await sendOTPEmail(studentProfile.email, otp);
+
+    return res.status(200).json({
+      message: "OTP sent to your email. Please verify to reset your password.",
+    });
+  } catch (err) {
+    console.error("Send OTP error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 const OTP_MAX_ATTEMPTS = 3;
 
 /**
- * Verifies OTP, marks account as active, returns JWT token.
- * Blocks activation temporarily after too many failed attempts.
+ * Shared logic for verifying OTP and updating user password.
+ * Blocks activation/password reset temporarily after too many failed attempts.
  */
+const _performOTPVerification = async (user, otp, newPassword) => {
+  // Block if too many OTP failures
+  if (user.isLocked && user.lockedUntil && user.lockedUntil > Date.now()) {
+    const minutesLeft = Math.ceil((user.lockedUntil - Date.now()) / 1000 / 60);
+    return {
+      status: 403,
+      error: `Too many failed attempts. Try again in ${minutesLeft} minute(s).`,
+    };
+  }
+
+  const otpRecord = await OTP.findOne({ identifier: user.identifier });
+  if (!otpRecord) {
+    return {
+      status: 400,
+      error: "OTP expired or not found. Please request a new one.",
+    };
+  }
+
+  if (otpRecord.otp !== otp) {
+    user.failedLoginAttempts += 1;
+    if (user.failedLoginAttempts >= OTP_MAX_ATTEMPTS) {
+      user.isLocked = true;
+      user.lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 min
+    }
+    await user.save();
+    const remaining = OTP_MAX_ATTEMPTS - user.failedLoginAttempts;
+    return {
+      status: 400,
+      error: `Invalid OTP. ${remaining > 0 ? `${remaining} attempt(s) remaining.` : "Account temporarily blocked."}`,
+    };
+  }
+
+  // Check if the new password is the same as the old password
+  const isMatch = await bcrypt.compare(newPassword, user.passwordHash);
+  if (isMatch) {
+    return {
+      status: 400,
+      error: "New password cannot be the same as the old password",
+    };
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 12);
+  user.passwordHash = passwordHash;
+  user.failedLoginAttempts = 0;
+  user.isLocked = false;
+  user.lockedUntil = undefined;
+  await user.save();
+
+  // Clean up the OTP record
+  await OTP.findOneAndDelete({ identifier: user.identifier });
+
+  return { success: true };
+};
+
+//Verifies OTP, marks account as active, returns JWT token.
 
 const verifyOTP = async (req, res) => {
   try {
@@ -170,45 +267,10 @@ const verifyOTP = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    // Block if too many OTP failures (reuse the login lock mechanism)
-    if (user.isLocked && user.lockedUntil && user.lockedUntil > Date.now()) {
-      const minutesLeft = Math.ceil(
-        (user.lockedUntil - Date.now()) / 1000 / 60,
-      );
-      return res.status(403).json({
-        error: `Too many failed attempts. Try again in ${minutesLeft} minute(s).`,
-      });
+    const verification = await _performOTPVerification(user, otp, newPassword);
+    if (!verification.success) {
+      return res.status(verification.status).json({ error: verification.error });
     }
-
-    const otpRecord = await OTP.findOne({ identifier });
-
-    if (!otpRecord) {
-      return res
-        .status(400)
-        .json({ error: "OTP expired or not found. Please request a new one." });
-    }
-
-    if (otpRecord.otp !== otp) {
-      user.failedLoginAttempts += 1;
-      if (user.failedLoginAttempts >= OTP_MAX_ATTEMPTS) {
-        user.isLocked = true;
-        user.lockedUntil = new Date(Date.now() + 15 * 60 * 1000); // 15 min
-      }
-      await user.save();
-      const remaining = OTP_MAX_ATTEMPTS - user.failedLoginAttempts;
-      return res.status(400).json({
-        error: `Invalid OTP. ${remaining > 0 ? `${remaining} attempt(s) remaining.` : "Account temporarily blocked."}`,
-      });
-    }
-
-    // OTP is correct apply the activation data sent from frontend
-    const passwordHash = await bcrypt.hash(newPassword, 12);
-
-    user.passwordHash = passwordHash;
-    user.failedLoginAttempts = 0;
-    user.isLocked = false;
-    user.lockedUntil = undefined;
-    await user.save();
 
     // Update Student profile: set phone and mark as active
     if (user.roleModel === "Student") {
@@ -218,9 +280,6 @@ const verifyOTP = async (req, res) => {
         phone: phone,
       });
     }
-
-    // Clean up the OTP record
-    await OTP.findOneAndDelete({ identifier });
 
     const token = await createToken(user);
 
@@ -234,4 +293,46 @@ const verifyOTP = async (req, res) => {
   }
 };
 
-module.exports = { createStudent, requestActivationOTP, verifyOTP };
+
+
+const verifyOTPForgotPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        error: "Email, OTP, and newPassword are all required",
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters" });
+    }
+
+    const studentProfile = await Student.findOne({ email });
+    if (!studentProfile) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const user = await User.findOne({ profile: studentProfile._id });
+    if (!user) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const verification = await _performOTPVerification(user, otp, newPassword);
+    if (!verification.success) {
+      return res.status(verification.status).json({ error: verification.error });
+    }
+
+    return res.status(200).json({
+      message: "Password reset successfully.",
+    });
+  } catch (err) {
+    console.error("Verify OTP Forgot Password error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { createStudent, requestActivationOTP, verifyOTP, sendOTPForgotPassword, verifyOTPForgotPassword };
