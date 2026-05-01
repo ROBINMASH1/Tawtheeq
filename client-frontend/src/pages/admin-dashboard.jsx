@@ -227,6 +227,51 @@ export default function AdminDashboard() {
             <h2 className="text-base font-extrabold text-gray-900 dark:text-white">Issued Certificates</h2>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
 
+              {/* Page numbers */}
+              {totalPages > 1 && (() => {
+                const windowSize = 5;
+                let start = Math.max(1, page - 2);
+                let end = start + windowSize - 1;
+                if (end > totalPages) { end = totalPages; start = Math.max(1, end - windowSize + 1); }
+                const pages = [];
+                for (let i = start; i <= end; i++) pages.push(i);
+                return (
+                  <div className="flex items-center gap-1">
+                    <button
+                      disabled={page <= 1}
+                      onClick={() => fetchCertificates(page - 1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="15 18 9 12 15 6"/>
+                      </svg>
+                    </button>
+                    {pages.map((p) => (
+                      <button
+                        key={p}
+                        onClick={() => fetchCertificates(p)}
+                        className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 ${
+                          p === page
+                            ? "bg-green-500 text-white shadow-sm"
+                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                    <button
+                      disabled={page >= totalPages}
+                      onClick={() => fetchCertificates(page + 1)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6"/>
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })()}
+
               {/* Search */}
               <div className="relative">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
