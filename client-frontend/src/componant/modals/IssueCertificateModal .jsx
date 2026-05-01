@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import API_URL from "../config/api";
 
 // ── Toast Banner ──────────────────────────────────────────────────────────────
 function Toast({ toast, onClick }) {
@@ -137,7 +138,7 @@ export default function IssueCertificateModal({ onClose }) {
       fd.append("graduationDate", graduationDate);
       fd.append("file", pdfFile);
 
-      const res = await fetch("http://localhost:5000/api/certificates/issue", {
+      const res = await fetch(`${API_URL}/api/certificates/issue`, {
         method: "POST", headers: authHeader, body: fd,
       });
       const data = await res.json();
@@ -165,7 +166,7 @@ export default function IssueCertificateModal({ onClose }) {
       fd.append("csv", csvFile);
       fd.append("zip", zipFile);
 
-      const res = await fetch("http://localhost:5000/api/certificates/bulk/preview", {
+      const res = await fetch(`${API_URL}/api/certificates/bulk/preview`, {
         method: "POST", headers: authHeader, body: fd,
       });
       const data = await res.json();
@@ -183,7 +184,7 @@ export default function IssueCertificateModal({ onClose }) {
     setBulkError("");
     setIssueLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/certificates/bulk/issue", {
+      const res = await fetch(`${API_URL}/api/certificates/bulk/issue`, {
         method: "POST",
         headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: previewData.sessionId, confirmedRows: previewData.confirmedRows }),
@@ -203,7 +204,7 @@ export default function IssueCertificateModal({ onClose }) {
   const startPolling = (jobId) => {
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/certificates/bulk/job/${jobId}`, {
+        const res = await fetch(`${API_URL}/api/certificates/bulk/job/${jobId}`, {
           headers: authHeader,
         });
         const data = await res.json();
