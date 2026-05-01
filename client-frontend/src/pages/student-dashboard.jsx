@@ -13,6 +13,7 @@ export default function StudentDashboard() {
   const [shareLoading, setShareLoading] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [recentShares, setRecentShares] = useState(0);
 
   const token = localStorage.getItem('token');
   const authHeader = { Authorization: `Bearer ${token}` };
@@ -20,7 +21,7 @@ export default function StudentDashboard() {
   const stats = {
     totalCredentials: credentials.length,
     verified: credentials.filter(c => c.status === 'verified').length,
-    recentShares: 0,
+    recentShares: recentShares,
   };
 
   useEffect(() => {
@@ -70,6 +71,7 @@ export default function StudentDashboard() {
       const data = await res.json();
       if (!res.ok) { alert(data.message || 'Share failed.'); return; }
       setShareResult({ link: data.shareLink || data.link || data.url || data.shareUrl, certId: cert.certificateId });
+      setRecentShares(prev => prev + 1);
     } catch {
       alert('Share failed. Please try again.');
     } finally {
