@@ -35,9 +35,12 @@ exports.verifyById = async (req, res) => {
       return res.status(400).json({ error: "Certificate has been revoked on the blockchain", status: "revoked" });
     }
 
+    //Optional for more integrity checks
+    // const retrievePdfCid = await ipfsService.retrieveFromIPFS(cert.ipfsHash);
+
     // Compare DB ipfsHash with Blockchain pdfCid
     if (parsedBcData.pdfCid && parsedBcData.pdfCid !== cert.ipfsHash) {
-      return res.status(400).json({ error: "Integrity check failed: Data hash mismatch", status: "invalid" });
+      return res.status(400).json({ error: "Integrity check failed: Data hash mismatch the certificate may be forged", status: "invalid" });
     }
 
     res.json({

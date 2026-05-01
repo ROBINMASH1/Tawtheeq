@@ -40,15 +40,17 @@ exports.retrieveFromIPFS = async (ipfsHash) => {
   const pass = process.env.IPFS_API_PASS;
 
   try {
-    if (!gatewayUrl) {
+    let url = gatewayUrl ? `${gatewayUrl}/ipfs/${ipfsHash}` : `https://ipfs.io/ipfs/${ipfsHash}`;
+    let config = {};
 
-      return `https://ipfs.io/ipfs/${ipfsHash}`;
+    if (gatewayUrl && user && pass) {
+      const auth = Buffer.from(`${user}:${pass}`).toString('base64');
+      config.headers = { 'Authorization': `Basic ${auth}` };
     }
 
-    // This bypasses the browser's credential challenge
-    // This only for demo , not in production
-    const authenticatedUrl = gatewayUrl.replace("https://", `https://${user}:${pass}@`);
-    return `${authenticatedUrl}/ipfs/${ipfsHash}`;
+    const response = await axios.get(url, config);
+    console.log("IPFS Retrieve Response:", response.data);
+    return response.data;
   }
   catch (error) {
     console.error("IPFS Retrieve Error:", error.message);
