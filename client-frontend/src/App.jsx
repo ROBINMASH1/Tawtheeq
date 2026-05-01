@@ -49,6 +49,7 @@ export default function App() {
 
           <Route path="/" element={<Home />} className="pt-16" />
           <Route path="/verify" element={<Verify />} className="pt-16" />
+          <Route path="/verify/:certificateId" element={<Verify />} className="pt-16" />
           <Route path="/login" element={<Login />} className="pt-16" />
           <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16" />
           <Route path="/test" element={<Test />} className="pt-16" />

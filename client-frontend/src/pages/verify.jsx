@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import API_URL from '../config/api';
 import LoadingScreen from "../componant/LoadingScreen";
 
 
 export default function Verify() {
-  const [certId, setCertId] = useState('');
+  const { certificateId } = useParams();
+  const [certId, setCertId] = useState(certificateId || '');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);   // certificate object
   const [error, setError] = useState('');
 
-  const handleVerify = async () => {
-    const id = certId.trim();
+  const handleVerify = async (idToVerify = certId) => {
+    // If called from a button click, `idToVerify` might be an event object.
+    const id = (typeof idToVerify === 'string' ? idToVerify : certId).trim();
     if (!id) { setError('Please enter a Certificate ID.'); return; }
 
     setError('');
@@ -36,6 +39,13 @@ export default function Verify() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (certificateId) {
+      handleVerify(certificateId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [certificateId]);
 
   const isVerified = result?.status === 'verified';
 
