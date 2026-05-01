@@ -1,25 +1,113 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import IssueCertificateModal from '../componant/modals/IssueCertificateModal ';
+import API_URL from "../config/api";
+
 export default function AdminDashboard() {
   const { user } = useAuth();
-
-  // placeholder — replace with fetch later
-  const stats = { totalCertificates: 0, recentActivities: 0 };
-  const certificates = []; // replace with fetched data later
-
-  const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
-  const [showIssueModal, setShowIssueModal] = useState(false);
   const navigate = useNavigate();
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  const [certificates, setCertificates] = useState([]);
+  const [total, setTotal]               = useState(0);
+  const [page, setPage]                 = useState(1);
+  const [totalPages, setTotalPages]     = useState(1);
+  const [loading, setLoading]           = useState(true);
+  const [error, setError]               = useState("");
+
+  const [search, setSearch]             = useState("");
+  const [sortBy, setSortBy]             = useState("newest");
+  const [showIssueModal, setShowIssueModal] = useState(false);
+  const [expandedId, setExpandedId]     = useState(null);
+  const [stats, setStats]               = useState({ totalIssued: 0, totalRevoked: 0, totalVerifications: 0 });
+
+  // ── Fetch certificates ─────────────────────────────────────────────────────
+  const fetchCertificates = useCallback(async (pg = 1) => {
+    setLoading(true);
+    setError("");
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/certificates/university?page=${pg}&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) { setError(data.message || "Failed to load certificates."); return; }
+      setCertificates(data.data);
+      setTotal(data.total);
+      setPage(data.page);
+      setTotalPages(data.totalPages);
+    } catch {
+      setError("Server error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ── Fetch stats ─────────────────────────────────────────────────────────────
+  const fetchStats = useCallback(async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/certificates/university/stats`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok) setStats(data);
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => { fetchCertificates(); fetchStats(); }, [fetchCertificates, fetchStats]);
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  const fmt = (d) => {
+    if (!d) return "—";
+    return new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  };
+
+  const statusBadge = (status) => {
+    const s = status || "unknown";
+    const colors =
+      s === "verified"
+        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+        : s === "revoked"
+        ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+        : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400";
+    const dot =
+      s === "verified" ? "bg-green-500" : s === "revoked" ? "bg-red-500" : "bg-yellow-500";
+    return (
+      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${colors}`}>
+        <span className={`w-1.5 h-1.5 rounded-full ${dot}`} />
+        {s.charAt(0).toUpperCase() + s.slice(1)}
+      </span>
+    );
+  };
+
+  // ── Filter & sort ──────────────────────────────────────────────────────────
+  const filtered = certificates
+    .filter((c) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        c.certificateId?.toLowerCase().includes(q) ||
+        c.studentId?.toLowerCase().includes(q) ||
+        c.degree?.toLowerCase().includes(q) ||
+        c.major?.toLowerCase().includes(q)
+      );
+    })
+    .sort((a, b) => {
+      if (sortBy === "newest") return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sortBy === "status") return (a.status || "").localeCompare(b.status || "");
+      return 0;
+    });
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <main className="pt-20 px-8 max-w-7xl mx-auto">
+      <main className="pt-16 px-8 max-w-7xl mx-auto">
 
         {/* Header */}
         <div
-          className="mt-8 bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm"
+          className="mt-2 bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm"
           style={{ animation: "fadeSlideIn 0.5s ease forwards" }}
         >
           <div>
@@ -70,14 +158,14 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
 
-          {/* Total Certificates */}
+          {/* Total Issued */}
           <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm border border-green-200 dark:border-green-800 flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Total Certificates</p>
-              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.totalCertificates}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Issued on blockchain</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Issued</p>
+              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.totalIssued}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Certificates on blockchain</p>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -88,21 +176,48 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Recent Activities */}
-          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
+          {/* Total Revoked */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm border border-red-200 dark:border-red-800 flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Recent Activities</p>
-              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.recentActivities}</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Last 7 days</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Revoked</p>
+              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.totalRevoked}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Certificates revoked</p>
+            </div>
+            <div className="w-14 h-14 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-400">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="15" y1="9" x2="9" y2="15"/>
+                <line x1="9" y1="9" x2="15" y2="15"/>
+              </svg>
+            </div>
+          </div>
+
+          {/* Total Verifications */}
+          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm border border-blue-200 dark:border-blue-800 flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Total Verifications</p>
+              <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.totalVerifications}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Verification lookups</p>
             </div>
             <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
             </div>
           </div>
 
         </div>
+
+        {/* Error */}
+        {error && (
+          <div className="mt-6 flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm px-5 py-4 rounded-2xl">
+            <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {error}
+          </div>
+        )}
 
         {/* Certificates Table */}
         <div className="mt-8 mb-16 bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
@@ -121,7 +236,7 @@ export default function AdminDashboard() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search by name or ID..."
+                  placeholder="Search by ID, degree..."
                   className="pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-400 transition w-full sm:w-60"
                 />
               </div>
@@ -134,14 +249,22 @@ export default function AdminDashboard() {
               >
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
-                <option value="name">Student Name</option>
                 <option value="status">Status</option>
               </select>
 
             </div>
           </div>
 
-          {certificates.length === 0 ? (
+          {loading ? (
+            /* Loading skeleton */
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <svg className="w-8 h-8 animate-spin text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+              </svg>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">Loading certificates…</p>
+            </div>
+
+          ) : filtered.length === 0 ? (
 
             /* Empty state */
             <div className="flex flex-col items-center justify-center py-20 gap-4">
@@ -153,65 +276,132 @@ export default function AdminDashboard() {
                   <line x1="9" y1="17" x2="15" y2="17"/>
                 </svg>
               </div>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">No certificates issued yet</p>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">No certificates found</p>
               <p className="text-sm text-gray-400 dark:text-gray-500">Issued certificates will appear here.</p>
             </div>
 
           ) : (
 
             /* Table */
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-50 dark:bg-gray-800 text-left">
-                    <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Certificate ID</th>
-                    <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Student Name</th>
-                    <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Degree</th>
-                    <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
-                  {certificates.map((cert, i) => (
-                    <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                      <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400">{cert.certId}</td>
-                      <td className="px-6 py-4 text-gray-900 dark:text-white font-medium">{cert.studentName}</td>
-                      <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{cert.degree}</td>
-                      <td className="px-6 py-4">
-                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${
-                          cert.status === "verified"
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                            : cert.status === "revoked"
-                            ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                            : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-                        }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            cert.status === "verified" ? "bg-green-500"
-                            : cert.status === "revoked" ? "bg-red-500"
-                            : "bg-yellow-500"
-                          }`} />
-                          {cert.status.charAt(0).toUpperCase() + cert.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <button className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors" title="View">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-                            </svg>
-                          </button>
-                          <button className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title="Revoke">
-                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
-                            </svg>
-                          </button>
-                        </div>
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-gray-50 dark:bg-gray-800 text-left">
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Certificate ID</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Student ID</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Degree</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Issued</th>
+                      <th className="px-6 py-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                    {filtered.map((cert) => (
+                      <tr
+                        key={cert._id}
+                        className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
+                        onClick={() => setExpandedId(expandedId === cert._id ? null : cert._id)}
+                      >
+                        <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">{cert.certificateId}</td>
+                        <td className="px-6 py-4 text-gray-900 dark:text-white font-medium">{cert.studentId}</td>
+                        <td className="px-6 py-4 text-gray-600 dark:text-gray-300">{cert.degree}</td>
+                        <td className="px-6 py-4">{statusBadge(cert.status)}</td>
+                        <td className="px-6 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">{fmt(cert.createdAt)}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                              title="View details"
+                              onClick={(e) => { e.stopPropagation(); setExpandedId(expandedId === cert._id ? null : cert._id); }}
+                            >
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                              </svg>
+                            </button>
+                            <button className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title="Revoke">
+                              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Expanded detail panel */}
+              {expandedId && (() => {
+                const cert = certificates.find((c) => c._id === expandedId);
+                if (!cert) return null;
+                return (
+                  <div
+                    className="border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-8 py-6"
+                    style={{ animation: "fadeSlideIn 0.3s ease forwards" }}
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-sm font-extrabold text-gray-900 dark:text-white">Certificate Details</h3>
+                      <button
+                        onClick={() => setExpandedId(null)}
+                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                      >
+                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {[
+                        { label: "Certificate ID",      value: cert.certificateId },
+                        { label: "Student ID",           value: cert.studentId },
+                        { label: "Personal ID",          value: cert.personalId },
+                        { label: "Degree",               value: cert.degree },
+                        { label: "Major",                value: cert.major },
+                        { label: "GPA",                  value: cert.gpa != null ? cert.gpa.toFixed(2) : "—" },
+                        { label: "Graduation Date",      value: fmt(cert.graduationDate) },
+                        { label: "Status",               value: cert.status?.charAt(0).toUpperCase() + cert.status?.slice(1) },
+                        { label: "Public",               value: cert.isPublic ? "Yes" : "No" },
+                        { label: "Issued On",            value: fmt(cert.createdAt) },
+                        { label: "IPFS Hash",            value: cert.ipfsHash || "—" },
+                        { label: "Blockchain Tx",        value: cert.blockchainTxHash || "—" },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-700">
+                          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{label}</p>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white break-all">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Page {page} of {totalPages} · {total} total
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      disabled={page <= 1}
+                      onClick={() => fetchCertificates(page - 1)}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Previous
+                    </button>
+                    <button
+                      disabled={page >= totalPages}
+                      onClick={() => fetchCertificates(page + 1)}
+                      className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
 
           )}
         </div>
