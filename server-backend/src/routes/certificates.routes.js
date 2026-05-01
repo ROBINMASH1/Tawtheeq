@@ -25,7 +25,6 @@ router.get('/university/stats', authMiddleware, requireRole('uniUser'), enforceU
 // 6. Get overall system certificate statistics (MoheAdmin only)
 router.get('/stats', authMiddleware, requireRole('MoheAdmin'), certController.getSystemStats);
 
-
 //  PARAMETERIZED ROUTES
 
 // 7. Revoke a specific certificate (uniUser only)
