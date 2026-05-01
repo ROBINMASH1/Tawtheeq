@@ -29,7 +29,7 @@ function Toast({ toast, onClick }) {
       </div>
       <div>
         <p className="text-sm font-bold">{toast.success ? "Certificate Issued!" : "Issuance Failed"}</p>
-        {toast.data && <p className="text-xs mt-0.5 opacity-80">Click to view details</p>}
+                {toast.data && <p className="text-xs mt-0.5 opacity-80">Click to view details</p>}
       </div>
     </div>
   );
@@ -164,7 +164,6 @@ export default function IssueCertificateModal({ onClose }) {
       const res = await fetch(`${API_URL}/api/certificates/issue`, {
         method: "POST", headers: authHeader, body: fd,
       });
-      
       let data;
       const contentType = res.headers.get("content-type");
       if (contentType && contentType.includes("application/json")) {
@@ -207,8 +206,19 @@ export default function IssueCertificateModal({ onClose }) {
       const res = await fetch(`${API_URL}/api/certificates/bulk/preview`, {
         method: "POST", headers: authHeader, body: fd,
       });
-      const data = await res.json();
-      if (!res.ok) { setBulkError(data.message || "Preview failed."); return; }
+      let data;
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(text || "Server returned non-JSON response");
+      }
+
+      if (!res.ok) {
+        setBulkError(data.error || data.message || "Preview failed.");
+        return;
+      }
       setPreviewData(data);
     } catch (err) {
       console.error("Bulk Preview Error:", err);
@@ -228,8 +238,19 @@ export default function IssueCertificateModal({ onClose }) {
         headers: { ...authHeader, "Content-Type": "application/json" },
         body: JSON.stringify({ sessionId: previewData.sessionId, confirmedRows: previewData.confirmedRows }),
       });
-      const data = await res.json();
-      if (!res.ok) { setBulkError(data.message || "Bulk issue failed."); return; }
+      let data;
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(text || "Server returned non-JSON response");
+      }
+
+      if (!res.ok) {
+        setBulkError(data.error || data.message || "Bulk issue failed.");
+        return;
+      }
       setBulkIssueResult(data);
       startPolling(data.jobId);
     } catch (err) {
