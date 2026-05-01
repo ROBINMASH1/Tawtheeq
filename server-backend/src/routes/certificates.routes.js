@@ -6,6 +6,7 @@ const { enforceUniversityScope } = require('../middleware/enforceUniversityScope
 const { upload, bulkUpload } = require('../middleware/upload');
 const certController = require('../controllers/certificate.controller');
 const bulkIssuanceController = require('../controllers/bulkIssuance.controller');
+const { verifyPassword } = require('../middleware/verifyPassword');
 
 // 1. Issue a single certificate (uniUser only)
 router.post('/issue', authMiddleware, requireRole('uniUser'), enforceUniversityScope, upload.single('file'), certController.issueCertificate);
@@ -28,7 +29,7 @@ router.get('/stats', authMiddleware, requireRole('MoheAdmin'), certController.ge
 //  PARAMETERIZED ROUTES
 
 // 7. Revoke a specific certificate (uniUser only)
-router.patch('/:certificateId/revoke', authMiddleware, requireRole('uniUser'), enforceUniversityScope, certController.revokeCertificate);
+router.patch('/:certificateId/revoke', authMiddleware, requireRole('uniUser'), enforceUniversityScope, verifyPassword, certController.revokeCertificate);
 
 // 8. Get details of a specific certificate by ID
 router.get('/:certificateId', authMiddleware, certController.getCertificateById);
