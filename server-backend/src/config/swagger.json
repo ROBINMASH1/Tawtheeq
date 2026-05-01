@@ -240,6 +240,77 @@
         }
       }
     },
+    "/api/students/send-otp-forgot-password": {
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Send an OTP for forgot password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OTP sent successfully"
+          }
+        }
+      }
+    },
+    "/api/students/verify-otp-forgot-password": {
+      "post": {
+        "tags": [
+          "Students"
+        ],
+        "summary": "Verify OTP and reset password",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "otp": {
+                    "type": "string"
+                  },
+                  "newPassword": {
+                    "type": "string",
+                    "minLength": 8
+                  }
+                },
+                "required": [
+                  "email",
+                  "otp",
+                  "newPassword"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Password reset successfully"
+          }
+        }
+      }
+    },
     "/api/universities/create": {
       "post": {
         "tags": [
@@ -1104,6 +1175,52 @@
           },
           "500": {
             "description": "Failed to generate share link"
+          }
+        }
+      }
+    },
+    "/api/certificates/{certificateId}/status": {
+      "patch": {
+        "tags": [
+          "Certificates"
+        ],
+        "summary": "Set certificate visibility status (requires Student role)",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "certificateId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isPublic": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "isPublic"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Certificate status set successfully"
           }
         }
       }
