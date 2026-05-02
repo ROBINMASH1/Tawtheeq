@@ -11,18 +11,19 @@ export default function AdminDashboard() {
 
   // ── State ──────────────────────────────────────────────────────────────────
   const [certificates, setCertificates] = useState([]);
-  const [total, setTotal]               = useState(0);
-  const [page, setPage]                 = useState(1);
-  const [totalPages, setTotalPages]     = useState(1);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState("");
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [search, setSearch]             = useState("");
-  const [sortBy, setSortBy]             = useState("newest");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [showIssueModal, setShowIssueModal] = useState(false);
-  const [showRevokeModal, setShowRevokeModal] = useState(false);        
-  const [expandedId, setExpandedId]     = useState(null);
-  const [stats, setStats]               = useState({ totalIssued: 0, totalRevoked: 0, totalVerifications: 0 });
+  const [showRevokeModal, setShowRevokeModal] = useState(false);
+  const [revokeTargetId, setRevokeTargetId] = useState("");
+  const [selectedCert, setSelectedCert] = useState(null);
+  const [stats, setStats] = useState({ totalIssued: 0, totalRevoked: 0, totalVerifications: 0 });
 
   // ── Fetch certificates ─────────────────────────────────────────────────────
   const fetchCertificates = useCallback(async (pg = 1) => {
@@ -72,8 +73,8 @@ export default function AdminDashboard() {
       s === "verified"
         ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
         : s === "revoked"
-        ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-        : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400";
+          ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+          : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400";
     const dot =
       s === "verified" ? "bg-green-500" : s === "revoked" ? "bg-red-500" : "bg-yellow-500";
     return (
@@ -127,20 +128,20 @@ export default function AdminDashboard() {
             {/* Issue Certificate */}
             <button onClick={() => setShowIssueModal(true)} className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <line x1="12" y1="18" x2="12" y2="12"/>
-                <line x1="9" y1="15" x2="15" y2="15"/>
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="12" y1="18" x2="12" y2="12" />
+                <line x1="9" y1="15" x2="15" y2="15" />
               </svg>
               Issue Certificate
             </button>
 
             {/* Revoke Certificate */}
-            <button onClick={() => setShowRevokeModal(true)}   className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
+            <button onClick={() => { setRevokeTargetId(""); setShowRevokeModal(true); }} className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="15" y1="9" x2="9" y2="15"/>
-                <line x1="9" y1="9" x2="15" y2="15"/>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
               </svg>
               Revoke Certificate
             </button>
@@ -148,10 +149,10 @@ export default function AdminDashboard() {
             {/* Staff Management */}
             <button onClick={() => navigate('/staff-management')} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 00-3-3.87"/>
-                <path d="M16 3.13a4 4 0 010 7.75"/>
+                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                <path d="M16 3.13a4 4 0 010 7.75" />
               </svg>
               Staff Management
             </button>
@@ -171,9 +172,9 @@ export default function AdminDashboard() {
             </div>
             <div className="w-14 h-14 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
-                <polyline points="9 12 11 14 15 10"/>
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <polyline points="9 12 11 14 15 10" />
               </svg>
             </div>
           </div>
@@ -187,9 +188,9 @@ export default function AdminDashboard() {
             </div>
             <div className="w-14 h-14 rounded-2xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-500 dark:text-red-400">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <line x1="15" y1="9" x2="9" y2="15"/>
-                <line x1="9" y1="9" x2="15" y2="15"/>
+                <circle cx="12" cy="12" r="10" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
               </svg>
             </div>
           </div>
@@ -203,8 +204,8 @@ export default function AdminDashboard() {
             </div>
             <div className="w-14 h-14 rounded-2xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
               <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
               </svg>
             </div>
           </div>
@@ -215,7 +216,7 @@ export default function AdminDashboard() {
         {error && (
           <div className="mt-6 flex items-center gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm px-5 py-4 rounded-2xl">
             <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
             </svg>
             {error}
           </div>
@@ -245,18 +246,17 @@ export default function AdminDashboard() {
                       className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="15 18 9 12 15 6"/>
+                        <polyline points="15 18 9 12 15 6" />
                       </svg>
                     </button>
                     {pages.map((p) => (
                       <button
                         key={p}
                         onClick={() => fetchCertificates(p)}
-                        className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 ${
-                          p === page
+                        className={`w-8 h-8 rounded-full text-xs font-bold flex items-center justify-center transition-all duration-200 ${p === page
                             ? "bg-green-500 text-white shadow-sm"
                             : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
+                          }`}
                       >
                         {p}
                       </button>
@@ -267,7 +267,7 @@ export default function AdminDashboard() {
                       className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                     >
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="9 18 15 12 9 6"/>
+                        <polyline points="9 18 15 12 9 6" />
                       </svg>
                     </button>
                   </div>
@@ -277,7 +277,7 @@ export default function AdminDashboard() {
               {/* Search */}
               <div className="relative">
                 <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
                 <input
                   type="text"
@@ -306,7 +306,7 @@ export default function AdminDashboard() {
             /* Loading skeleton */
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <svg className="w-8 h-8 animate-spin text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                <path d="M21 12a9 9 0 11-6.219-8.56" />
               </svg>
               <p className="text-gray-500 dark:text-gray-400 text-sm">Loading certificates…</p>
             </div>
@@ -317,10 +317,10 @@ export default function AdminDashboard() {
             <div className="flex flex-col items-center justify-center py-20 gap-4">
               <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 dark:text-gray-500">
                 <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                  <polyline points="14 2 14 8 20 8"/>
-                  <line x1="9" y1="13" x2="15" y2="13"/>
-                  <line x1="9" y1="17" x2="15" y2="17"/>
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <line x1="9" y1="13" x2="15" y2="13" />
+                  <line x1="9" y1="17" x2="15" y2="17" />
                 </svg>
               </div>
               <p className="text-gray-500 dark:text-gray-400 font-medium">No certificates found</p>
@@ -348,7 +348,7 @@ export default function AdminDashboard() {
                       <tr
                         key={cert._id}
                         className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer"
-                        onClick={() => setExpandedId(expandedId === cert._id ? null : cert._id)}
+                        onClick={() => setSelectedCert(cert)}
                       >
                         <td className="px-6 py-4 font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">{cert.certificateId}</td>
                         <td className="px-6 py-4 text-gray-900 dark:text-white font-medium">{cert.studentId}</td>
@@ -360,15 +360,19 @@ export default function AdminDashboard() {
                             <button
                               className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                               title="View details"
-                              onClick={(e) => { e.stopPropagation(); setExpandedId(expandedId === cert._id ? null : cert._id); }}
+                              onClick={(e) => { e.stopPropagation(); setSelectedCert(cert); }}
                             >
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
                               </svg>
                             </button>
-                            <button className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors" title="Revoke">
+                            <button
+                              className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              title="Revoke"
+                              onClick={(e) => { e.stopPropagation(); setRevokeTargetId(cert.certificateId); setShowRevokeModal(true); }}
+                            >
                               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+                                <circle cx="12" cy="12" r="10" /><line x1="15" y1="9" x2="9" y2="15" /><line x1="9" y1="9" x2="15" y2="15" />
                               </svg>
                             </button>
                           </div>
@@ -379,50 +383,7 @@ export default function AdminDashboard() {
                 </table>
               </div>
 
-              {/* Expanded detail panel */}
-              {expandedId && (() => {
-                const cert = certificates.find((c) => c._id === expandedId);
-                if (!cert) return null;
-                return (
-                  <div
-                    className="border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50 px-8 py-6"
-                    style={{ animation: "fadeSlideIn 0.3s ease forwards" }}
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-extrabold text-gray-900 dark:text-white">Certificate Details</h3>
-                      <button
-                        onClick={() => setExpandedId(null)}
-                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-                      >
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {[
-                        { label: "Certificate ID",      value: cert.certificateId },
-                        { label: "Student ID",           value: cert.studentId },
-                        { label: "Personal ID",          value: cert.personalId },
-                        { label: "Degree",               value: cert.degree },
-                        { label: "Major",                value: cert.major },
-                        { label: "GPA",                  value: cert.gpa != null ? cert.gpa.toFixed(2) : "—" },
-                        { label: "Graduation Date",      value: fmt(cert.graduationDate) },
-                        { label: "Status",               value: cert.status?.charAt(0).toUpperCase() + cert.status?.slice(1) },
-                        { label: "Public",               value: cert.isPublic ? "Yes" : "No" },
-                        { label: "Issued On",            value: fmt(cert.createdAt) },
-                        { label: "IPFS Hash",            value: cert.ipfsHash || "—" },
-                        { label: "Blockchain Tx",        value: cert.blockchainTxHash || "—" },
-                      ].map(({ label, value }) => (
-                        <div key={label} className="bg-white dark:bg-gray-900 rounded-xl px-4 py-3 border border-gray-200 dark:border-gray-700">
-                          <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{label}</p>
-                          <p className="text-sm font-bold text-gray-900 dark:text-white break-all">{value}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })()}
+
 
               {/* Pagination */}
               {totalPages > 1 && (
@@ -462,7 +423,91 @@ export default function AdminDashboard() {
         }
       `}</style>
       {showIssueModal && <IssueCertificateModal onClose={() => setShowIssueModal(false)} />}
-      {showRevokeModal && <RevokeCertificateModal onClose={() => setShowRevokeModal(false)} />} 
+      {showRevokeModal && (
+        <RevokeCertificateModal
+          initialCertId={revokeTargetId}
+          onClose={() => setShowRevokeModal(false)}
+          onRevoked={() => { fetchCertificates(page); fetchStats(); }}
+        />
+      )}
+
+      {/* ── CERTIFICATE DETAIL MODAL ── */}
+      {selectedCert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div
+            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl p-6 flex flex-col gap-5"
+            style={{ animation: "fadeSlideIn 0.3s ease forwards" }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <polyline points="9 12 11 14 15 10" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-base font-extrabold text-gray-900 dark:text-white">Certificate Details</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{selectedCert.certificateId}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedCert(null)}
+                className="w-8 h-8 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-white flex items-center justify-center transition-colors"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Certificate ID", value: selectedCert.certificateId },
+                { label: "Student ID", value: selectedCert.studentId },
+                { label: "Personal ID", value: selectedCert.personalId },
+                { label: "Degree", value: selectedCert.degree },
+                { label: "Major", value: selectedCert.major },
+                { label: "GPA", value: selectedCert.gpa != null ? selectedCert.gpa.toFixed(2) : "—" },
+                { label: "Graduation Date", value: fmt(selectedCert.graduationDate) },
+                { label: "Status", value: selectedCert.status?.charAt(0).toUpperCase() + selectedCert.status?.slice(1) },
+                { label: "Public", value: selectedCert.isPublic ? "Yes" : "No" },
+                { label: "Issued On", value: fmt(selectedCert.createdAt) },
+              ].map(({ label, value }) => (
+                <div key={label} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                  <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">{label}</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white break-all">{value}</p>
+                </div>
+              ))}
+            </div>
+
+            {(selectedCert.ipfsHash || selectedCert.blockchainTxHash) && (
+              <div className="flex flex-col gap-3">
+                {selectedCert.ipfsHash && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">IPFS Hash</p>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white break-all">{selectedCert.ipfsHash}</p>
+                  </div>
+                )}
+                {selectedCert.blockchainTxHash && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                    <p className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wide mb-1">Blockchain Tx Hash</p>
+                    <p className="text-xs font-bold text-gray-900 dark:text-white break-all">{selectedCert.blockchainTxHash}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
+              onClick={() => setSelectedCert(null)}
+              className="w-full bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -33,11 +33,11 @@ function Step({ num, label, active, done }) {
 }
 
 // ── Main Modal ────────────────────────────────────────────────────────────────
-export default function RevokeCertificateModal({ onClose, onRevoked }) {
+export default function RevokeCertificateModal({ onClose, onRevoked, initialCertId = "" }) {
   const [step, setStep] = useState(1); // 1 = form, 2 = confirm password, 3 = success
 
   // Form
-  const [certId, setCertId]       = useState("");
+  const [certId, setCertId]       = useState(initialCertId);
   const [reason, setReason]       = useState("");
   const [customReason, setCustomReason] = useState("");
   const [formError, setFormError] = useState("");
