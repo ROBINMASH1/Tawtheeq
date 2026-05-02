@@ -6,7 +6,8 @@ const FormData = require('form-data');
  */
 exports.uploadToIPFS = async (fileBuffer, fileName) => {
   try {
-    const ipfsApiUrl = process.env.IPFS_API_URL;
+    let ipfsApiUrl = process.env.IPFS_API_URL;
+    if (ipfsApiUrl) ipfsApiUrl = ipfsApiUrl.replace(/\/+$/, '');
     const ipfsApiUser = process.env.IPFS_API_USER;
     const ipfsApiPass = process.env.IPFS_API_PASS;
 
@@ -19,7 +20,7 @@ exports.uploadToIPFS = async (fileBuffer, fileName) => {
     formData.append('file', fileBuffer, { filename: fileName });
 
     const auth = Buffer.from(`${ipfsApiUser}:${ipfsApiPass}`).toString('base64');
-
+  
     const response = await axios.post(`${ipfsApiUrl}/api/v0/add`, formData, {
       headers: {
         ...formData.getHeaders(),
@@ -35,7 +36,8 @@ exports.uploadToIPFS = async (fileBuffer, fileName) => {
 };
 
 exports.retrieveFromIPFS = async (ipfsHash) => {
-  const gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  let gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  if (gatewayUrl) gatewayUrl = gatewayUrl.replace(/\/+$/, '');
   const user = process.env.IPFS_API_USER;
   const pass = process.env.IPFS_API_PASS;
 
@@ -59,7 +61,8 @@ exports.retrieveFromIPFS = async (ipfsHash) => {
 };
 
 exports.downloadFromIPFS = async (ipfsHash) => {
-  const gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  let gatewayUrl = process.env.IPFS_GATEWAY_URL;
+  if (gatewayUrl) gatewayUrl = gatewayUrl.replace(/\/+$/, '');
   const user = process.env.IPFS_API_USER;
   const pass = process.env.IPFS_API_PASS;
 
