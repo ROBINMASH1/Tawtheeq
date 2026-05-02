@@ -13,33 +13,34 @@ export default function Login() {
   const navigate = useNavigate();
   const { login, user, loading: authLoading } = useAuth();
 
-  const redirectByRole = (decoded) => {
+  const redirectByRole = (decoded, useReplace = false) => {
     const roleModel = decoded?.roleModel?.toLowerCase();
+    const opts = useReplace ? { replace: true } : {};
 
     switch (roleModel) {
       case "student":
-        if (decoded?.isActive === false) return navigate("/profile-setup");
-        return navigate("/student-dashboard");
+        if (decoded?.isActive === false) return navigate("/profile-setup", opts);
+        return navigate("/student-dashboard", opts);
 
       case "uniuser": {
         const subRole = decoded?.subRole?.toLowerCase();
-        if (subRole === "uniadmin") return navigate("/admin-dashboard");
-        if (subRole === "unistaff") return navigate("/staff-dashboard");
-        return navigate("/");
+        if (subRole === "uniadmin") return navigate("/admin-dashboard", opts);
+        if (subRole === "unistaff") return navigate("/staff-dashboard", opts);
+        return navigate("/", opts);
       }
 
       case "moheadmin":
-        return navigate("/mohe-dashboard");
+        return navigate("/mohe-dashboard", opts);
 
       default:
-        return navigate("/");
+        return navigate("/", opts);
     }
   };
 
-  // Redirect already-authenticated users to their dashboard
+  // Redirect already-authenticated users away from login — use replace so back doesn't loop
   useEffect(() => {
     if (!authLoading && user) {
-      redirectByRole(user);
+      redirectByRole(user, true);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user]);
