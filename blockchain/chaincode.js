@@ -127,7 +127,7 @@ class CertificateContract extends Contract {
                 docType: 'certificate',
                 studentPersonalId: studentPersonalId
             }
-        }); ``
+        });
 
         const iterator = await ctx.stub.getQueryResult(queryString);
         const results = [];
