@@ -14,11 +14,16 @@ const headers = {
 async function enroll() {
   console.log(`Checking identity "${user}"...`);
   try {
-    //Check if the identity even exists in the network
-    await axios.get(`${url}/identities/${user}`, { headers });
+    //Check if the identity even exists in the network (Optional check)
+    try {
+      await axios.get(`${url}/identities/${user}`, { headers });
+      console.log(`Identity found on network.`);
+    } catch (checkErr) {
+      console.log(`Warning: Could not verify identity existence (Permission issue or not found), proceeding to enroll...`);
+    }
 
-    // If it exists, try to enroll
-    console.log(`Identity found. Attempting enrollment...`);
+    // Attempt to enroll
+    console.log(`Attempting enrollment for "${user}"...`);
     await axios.post(`${url}/identities/${user}/enroll`, { secret }, { headers });
     console.log('Success! Enrollment complete.');
 
@@ -28,7 +33,7 @@ async function enroll() {
 
     if (msg.includes('no rows in result set')) {
       console.log(`Error: User "${user}" does not exist in the Kaleido network.`);
-    } else if (msg.includes('Authentication failure')) {
+    } else if (msg.includes('Authentication failure') || msg.includes('already enrolled')) {
       console.log(`User "${user}" is already enrolled.`);
     } else {
       console.log(`Enrollment Failed: ${msg}`);

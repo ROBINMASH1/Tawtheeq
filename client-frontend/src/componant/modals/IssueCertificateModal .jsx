@@ -19,23 +19,21 @@ function Toast({ toast, onClick }) {
   return (
     <div
       onClick={onClick}
-      className={`fixed top-6 right-6 z-[100] flex items-start gap-3 px-5 py-4 rounded-2xl shadow-2xl cursor-pointer max-w-sm border transition-all duration-300 ${
-        toast.success
-          ? "bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300"
-          : "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300"
-      }`}
+      className={`fixed top-6 right-6 z-[100] flex items-start gap-3 px-5 py-4 rounded-2xl shadow-2xl cursor-pointer max-w-sm border transition-all duration-300 ${toast.success
+        ? "bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700 text-green-800 dark:text-green-300"
+        : "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700 text-red-800 dark:text-red-300"
+        }`}
       style={{ animation: "slideInRight 0.3s ease forwards" }}
     >
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-        toast.success ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400" : "bg-red-100 dark:bg-red-900/50 text-red-500"
-      }`}>
+      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${toast.success ? "bg-green-100 dark:bg-green-900/50 text-green-600 dark:text-green-400" : "bg-red-100 dark:bg-red-900/50 text-red-500"
+        }`}>
         {toast.success ? (
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
           </svg>
         ) : (
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
           </svg>
         )}
       </div>
@@ -57,9 +55,9 @@ function DetailBox({ data, onClose }) {
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-              <polyline points="9 12 11 14 15 10"/>
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <polyline points="9 12 11 14 15 10" />
             </svg>
           </div>
           <div>
@@ -310,10 +308,10 @@ export default function IssueCertificateModal({ onClose }) {
         });
         const data = await res.json();
         setJobProgress(data);
-        if (data.status === "done" || data.status === "failed") {
+        if (data.status !== "running" && data.status !== "pending") {
           clearInterval(pollRef.current);
           setJobDone(true);
-          // Persist final state so the user can review results after reopening modal
+          // Persist final state
           localStorage.setItem(BULK_JOB_KEY, JSON.stringify({
             jobId,
             bulkIssueResult: initialResult,
@@ -342,7 +340,7 @@ export default function IssueCertificateModal({ onClose }) {
     setMode(null); // Return to mode selection
   };
 
-  const progressPercent = jobProgress
+  const progressPercent = (jobProgress && jobProgress.total > 0)
     ? Math.round((jobProgress.processed / jobProgress.total) * 100)
     : 0;
 
@@ -373,17 +371,17 @@ export default function IssueCertificateModal({ onClose }) {
                   className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center shadow-sm transition-colors"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+                    <line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" />
                   </svg>
                 </button>
               )}
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center">
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="12" y1="18" x2="12" y2="12"/>
-                    <line x1="9" y1="15" x2="15" y2="15"/>
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <line x1="9" y1="15" x2="15" y2="15" />
                   </svg>
                 </div>
                 <div>
@@ -402,7 +400,7 @@ export default function IssueCertificateModal({ onClose }) {
               className="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center shadow-sm transition-colors"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </button>
           </div>
@@ -416,10 +414,10 @@ export default function IssueCertificateModal({ onClose }) {
               >
                 <div className="w-16 h-16 rounded-2xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="12" y1="18" x2="12" y2="12"/>
-                    <line x1="9" y1="15" x2="15" y2="15"/>
+                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                    <line x1="12" y1="18" x2="12" y2="12" />
+                    <line x1="9" y1="15" x2="15" y2="15" />
                   </svg>
                 </div>
                 <div className="text-center">
@@ -434,10 +432,10 @@ export default function IssueCertificateModal({ onClose }) {
               >
                 <div className="w-16 h-16 rounded-2xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
-                    <polyline points="13 2 13 9 20 9"/>
-                    <line x1="9" y1="14" x2="15" y2="14"/>
-                    <line x1="9" y1="18" x2="13" y2="18"/>
+                    <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
+                    <polyline points="13 2 13 9 20 9" />
+                    <line x1="9" y1="14" x2="15" y2="14" />
+                    <line x1="9" y1="18" x2="13" y2="18" />
                   </svg>
                 </div>
                 <div className="text-center">
@@ -464,14 +462,13 @@ export default function IssueCertificateModal({ onClose }) {
                   <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                     Certificate PDF <span className="text-red-400">*</span>
                   </label>
-                  <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${
-                    pdfFile
-                      ? "border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
-                      : "border-gray-200 dark:border-gray-700 hover:border-green-400 dark:hover:border-green-600 bg-gray-50 dark:bg-gray-800"
-                  }`}>
+                  <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${pdfFile
+                    ? "border-green-400 dark:border-green-600 bg-green-50 dark:bg-green-900/20"
+                    : "border-gray-200 dark:border-gray-700 hover:border-green-400 dark:hover:border-green-600 bg-gray-50 dark:bg-gray-800"
+                    }`}>
                     <svg className={`w-8 h-8 ${pdfFile ? "text-green-500" : "text-gray-400 dark:text-gray-500"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
+                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
                     </svg>
                     <p className={`text-sm font-medium ${pdfFile ? "text-green-600 dark:text-green-400" : "text-gray-500 dark:text-gray-400"}`}>
                       {pdfFile ? pdfFile.name : "Click to upload PDF"}
@@ -485,7 +482,7 @@ export default function IssueCertificateModal({ onClose }) {
               {singleError && (
                 <div className="mt-4 flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
                   <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                   {singleError}
                 </div>
@@ -501,7 +498,7 @@ export default function IssueCertificateModal({ onClose }) {
                   className="flex-1 bg-green-500 hover:bg-green-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
                 >
                   {singleLoading ? (
-                    <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>Issuing...</>
+                    <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Issuing...</>
                   ) : "Issue Certificate"}
                 </button>
               </div>
@@ -516,7 +513,7 @@ export default function IssueCertificateModal({ onClose }) {
               {isJobBlocking && !jobDone && (
                 <div className="flex items-center gap-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl px-5 py-4">
                   <svg className="w-5 h-5 text-blue-500 animate-spin shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                    <path d="M21 12a9 9 0 11-6.219-8.56" />
                   </svg>
                   <div>
                     <p className="text-sm font-bold text-blue-700 dark:text-blue-300">Bulk job running in background</p>
@@ -535,12 +532,11 @@ export default function IssueCertificateModal({ onClose }) {
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         CSV File <span className="text-red-400">*</span>
                       </label>
-                      <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${
-                        csvFile ? "border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20" : "border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 bg-gray-50 dark:bg-gray-800"
-                      }`}>
+                      <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${csvFile ? "border-blue-400 dark:border-blue-600 bg-blue-50 dark:bg-blue-900/20" : "border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 bg-gray-50 dark:bg-gray-800"
+                        }`}>
                         <svg className={`w-8 h-8 ${csvFile ? "text-blue-500" : "text-gray-400 dark:text-gray-500"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
-                          <polyline points="13 2 13 9 20 9"/>
+                          <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z" />
+                          <polyline points="13 2 13 9 20 9" />
                         </svg>
                         <p className={`text-sm font-medium ${csvFile ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}`}>
                           {csvFile ? csvFile.name : "Click to upload CSV"}
@@ -555,13 +551,12 @@ export default function IssueCertificateModal({ onClose }) {
                       <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                         ZIP File <span className="text-red-400">*</span>
                       </label>
-                      <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${
-                        zipFile ? "border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600 bg-gray-50 dark:bg-gray-800"
-                      }`}>
+                      <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed rounded-xl px-4 py-6 cursor-pointer transition-colors ${zipFile ? "border-purple-400 dark:border-purple-600 bg-purple-50 dark:bg-purple-900/20" : "border-gray-200 dark:border-gray-700 hover:border-purple-400 dark:hover:border-purple-600 bg-gray-50 dark:bg-gray-800"
+                        }`}>
                         <svg className={`w-8 h-8 ${zipFile ? "text-purple-500" : "text-gray-400 dark:text-gray-500"}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                          <polyline points="17 8 12 3 7 8"/>
-                          <line x1="12" y1="3" x2="12" y2="15"/>
+                          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                          <polyline points="17 8 12 3 7 8" />
+                          <line x1="12" y1="3" x2="12" y2="15" />
                         </svg>
                         <p className={`text-sm font-medium ${zipFile ? "text-purple-600 dark:text-purple-400" : "text-gray-500 dark:text-gray-400"}`}>
                           {zipFile ? zipFile.name : "Click to upload ZIP"}
@@ -575,7 +570,7 @@ export default function IssueCertificateModal({ onClose }) {
                   {bulkError && (
                     <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm px-4 py-3 rounded-xl">
                       <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                        <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
                       </svg>
                       {bulkError}
                     </div>
@@ -587,7 +582,7 @@ export default function IssueCertificateModal({ onClose }) {
                     className="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
                   >
                     {previewLoading ? (
-                      <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>Generating Preview...</>
+                      <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Generating Preview...</>
                     ) : "Preview"}
                   </button>
                 </div>
@@ -636,11 +631,10 @@ export default function IssueCertificateModal({ onClose }) {
                                   <td className="px-4 py-3 text-gray-800 dark:text-gray-200 font-medium">{row.studentId || "—"}</td>
                                   <td className="px-4 py-3 text-gray-800 dark:text-gray-200">{row.studentName || row.name || "—"}</td>
                                   <td className="px-4 py-3">
-                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                      row.status === "valid"
-                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                        : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                                    }`}>
+                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${row.status === "valid"
+                                      ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                      : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                                      }`}>
                                       <span className={`w-1.5 h-1.5 rounded-full ${row.status === "valid" ? "bg-green-500" : "bg-red-500"}`} />
                                       {row.status}
                                     </span>
@@ -669,7 +663,7 @@ export default function IssueCertificateModal({ onClose }) {
                               <div className="flex items-center gap-1">
                                 <button onClick={() => setPreviewPage(p => Math.max(1, p - 1))} disabled={previewPage === 1}
                                   className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
                                 </button>
                                 {Array.from({ length: totalPreviewPages }, (_, i) => i + 1)
                                   .filter(p => p === 1 || p === totalPreviewPages || Math.abs(p - previewPage) <= 1)
@@ -682,13 +676,13 @@ export default function IssueCertificateModal({ onClose }) {
                                     item === "…"
                                       ? <span key={`e${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs">…</span>
                                       : <button key={item} onClick={() => setPreviewPage(item)}
-                                          className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${previewPage === item ? "bg-blue-600 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
-                                          {item}
-                                        </button>
+                                        className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${previewPage === item ? "bg-blue-600 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
+                                        {item}
+                                      </button>
                                   )}
                                 <button onClick={() => setPreviewPage(p => Math.min(totalPreviewPages, p + 1))} disabled={previewPage === totalPreviewPages}
                                   className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                                 </button>
                               </div>
                             )}
@@ -704,7 +698,7 @@ export default function IssueCertificateModal({ onClose }) {
                     className="w-full bg-green-500 hover:bg-green-600 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all"
                   >
                     {issueLoading ? (
-                      <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>Starting...</>
+                      <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56" /></svg>Starting...</>
                     ) : `Issue ${previewData.summary.valid} Valid Certificate${previewData.summary.valid !== 1 ? "s" : ""}`}
                   </button>
                 </div>
@@ -718,7 +712,7 @@ export default function IssueCertificateModal({ onClose }) {
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
                       </svg>
                     </div>
                     <div>
@@ -731,7 +725,7 @@ export default function IssueCertificateModal({ onClose }) {
                   {!jobProgress && (
                     <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                       <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                        <path d="M21 12a9 9 0 11-6.219-8.56" />
                       </svg>
                       Connecting to job status...
                     </div>
@@ -748,9 +742,8 @@ export default function IssueCertificateModal({ onClose }) {
                       </div>
                       <div className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                         <div
-                          className={`h-full rounded-full transition-all duration-500 ${
-                            jobProgress.status === "failed" ? "bg-red-500" : jobProgress.status === "done" ? "bg-green-500" : "bg-blue-500"
-                          }`}
+                          className={`h-full rounded-full transition-all duration-500 ${jobProgress.status === "failed" ? "bg-red-500" : jobProgress.status === "done" ? "bg-green-500" : "bg-blue-500"
+                            }`}
                           style={{ width: `${progressPercent}%` }}
                         />
                       </div>
@@ -771,10 +764,10 @@ export default function IssueCertificateModal({ onClose }) {
                       </div>
 
                       {/* Running indicator */}
-                      {jobProgress.status === "running" && (
+                      {jobProgress.status === "running" && jobProgress.total > 0 && (
                         <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
                           <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M21 12a9 9 0 11-6.219-8.56"/>
+                            <path d="M21 12a9 9 0 11-6.219-8.56" />
                           </svg>
                           Issuing certificates on the blockchain...
                         </div>
@@ -801,11 +794,10 @@ export default function IssueCertificateModal({ onClose }) {
                                     <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors">
                                       <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{r.rowIndex ?? (resultsPage - 1) * pageSize + i + 1}</td>
                                       <td className="px-4 py-3">
-                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
-                                          r.status === "success"
-                                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                            : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
-                                        }`}>
+                                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${r.status === "success"
+                                          ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                                          : "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                                          }`}>
                                           <span className={`w-1.5 h-1.5 rounded-full ${r.status === "success" ? "bg-green-500" : "bg-red-500"}`} />
                                           {r.status}
                                         </span>
@@ -834,7 +826,7 @@ export default function IssueCertificateModal({ onClose }) {
                                 <div className="flex items-center gap-1">
                                   <button onClick={() => setResultsPage(p => Math.max(1, p - 1))} disabled={resultsPage === 1}
                                     className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
                                   </button>
                                   {Array.from({ length: totalResultsPages }, (_, i) => i + 1)
                                     .filter(p => p === 1 || p === totalResultsPages || Math.abs(p - resultsPage) <= 1)
@@ -847,13 +839,13 @@ export default function IssueCertificateModal({ onClose }) {
                                       item === "…"
                                         ? <span key={`e${idx}`} className="w-8 h-8 flex items-center justify-center text-gray-400 text-xs">…</span>
                                         : <button key={item} onClick={() => setResultsPage(item)}
-                                            className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${resultsPage === item ? "bg-green-500 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
-                                            {item}
-                                          </button>
+                                          className={`w-8 h-8 rounded-lg text-xs font-semibold transition-colors ${resultsPage === item ? "bg-green-500 text-white" : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"}`}>
+                                          {item}
+                                        </button>
                                     )}
                                   <button onClick={() => setResultsPage(p => Math.min(totalResultsPages, p + 1))} disabled={resultsPage === totalResultsPages}
                                     className="w-8 h-8 rounded-lg flex items-center justify-center border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
                                   </button>
                                 </div>
                               )}
@@ -862,13 +854,12 @@ export default function IssueCertificateModal({ onClose }) {
                         );
                       })()}
 
-                      {/* Done — clears job session and unlocks upload screen */}
-                      {jobDone && (
+                      {(jobDone || (jobProgress && (!jobProgress.total || jobProgress.total === 0 || jobProgress.status === "failed" || jobProgress.status === "error"))) && (
                         <button
                           onClick={handleBulkDone}
-                          className="w-full bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all mt-2"
+                          className="w-full bg-red-500 hover:bg-red-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all mt-2"
                         >
-                          Done
+                          {(!jobProgress?.total || jobProgress?.total === 0 || jobProgress?.status === "failed" || jobProgress?.status === "error") ? "Cancel" : "Done"}
                         </button>
                       )}
                     </div>
