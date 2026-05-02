@@ -1,70 +1,25 @@
-# Tawtheeq
+# Tawtheeq (توثيق)
 
+## 🎓 Project Overview
+**Tawtheeq** is a comprehensive, secure, and centralized academic credential issuance and verification platform. It is designed to bridge the gap between universities, the Ministry of Higher Education (MOHE), staff, and students by providing a unified ecosystem for managing academic certificates. 
 
+The primary goal of Tawtheeq is to prevent credential fraud, streamline the certificate issuance process, and provide a fast, reliable method for third parties (such as employers) to verify academic achievements.
 
-## 🚀 MERN Stack Project: [Tawtheeq]
-A full-stack application built with React (Vite), Node.js (Express), and MongoDB. This project uses a monorepo structure to manage both the frontend and backend in a single repository.
+### Key Stakeholders:
+- **MOHE (Ministry of Higher Education)**: Administrative oversight, system-wide auditing, and global certificate management.
+- **University Administrators & Staff**: Certificate issuance, revocation, and student management.
+- **Students**: Secure access to their academic credentials, tracking, and easy sharing of verified certificates.
 
-## 📂 Project Structure
-
-
-Tawtheeq/
-
-
- client/           # React + Vite (Frontend)
-
- 
- server/           # Node.js + Express (Backend)
-
- 
-.gitignore        # Root gitignore for the whole project
-
-
- package.json      # Root manager for concurrent execution
-
-## 🛠️ Prerequisites & Packages
-Before running the project, ensure you have Node.js (v18 or higher) installed.
-
-
-Run npm run install-all to install all dependencies.
-
-
-Environment Variables
-
-
-Create a .env file inside the /server folder:
-
-
-PORT=5000
-
-
-MONGO_URI=your_mongodb_connection_string
-
-
-## 🚀 Running the Project
-
-
-To start both the Vite dev server and the Express backend simultaneously, run:
-
-
-npm run dev
-
-
-Frontend: http://localhost:5173
-
-
-Backend: http://localhost:5000
-
+## 🚀 Technology Stack
+A full-stack application built using the MERN stack:
+- **Frontend**: React (Vite), TailwindCSS
+- **Backend**: Node.js (Express)
+- **Database**: MongoDB (Mongoose)
 
 ## 📝 Key Features
-
-
-Monorepo Architecture: Managed via npm workspaces/prefixes.
-
-
-Proxying: Vite is configured to proxy /api requests to the Express server to avoid CORS issues.
-
-
-Database: Structured data modeling using Mongoose Schemas.
-
-
+- **Role-Based Dashboards**: Tailored interfaces for MOHE, University Admins, Staff, and Students.
+- **Certificate Lifecycle Management**: Issue, revoke, and manage academic certificates securely.
+- **Verification System**: Instant validation of certificates to ensure authenticity.
+- **Audit Logs**: Comprehensive tracking of all administrative actions for transparency.
+- **Secure Authentication**: OTP-based password recovery, robust session management.
+- **Responsive UI/UX**: Modern, accessible, and fast interface with dark/light mode support.
