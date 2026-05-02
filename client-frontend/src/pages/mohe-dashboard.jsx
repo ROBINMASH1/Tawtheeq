@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../config/api";
+import AllSystemCertificate from "../componant/modals/AllSystemCertificate";
 
 /* ─── Log Detail Modal ──────────────────────────────────────────────────── */
 function LogDetailModal({ log, onClose }) {
@@ -114,6 +115,9 @@ export default function MoheDashboard() {
   const [logsLoading, setLogsLoading] = useState(true);
   const [pagination, setPagination]   = useState({ page: 1, totalPages: 1, total: 0 });
   const [selectedLog, setSelectedLog] = useState(null);
+
+  /* Modals */
+  const [showAllCerts, setShowAllCerts] = useState(false);
 
   /* ── Fetch stats ────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -234,16 +238,30 @@ export default function MoheDashboard() {
             </p>
           </div>
 
-          <button
-            onClick={() => navigate("/university-management")}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
-          >
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            University Management
-          </button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            <button
+              onClick={() => setShowAllCerts(true)}
+              className="flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 text-gray-700 dark:text-gray-200 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="9" y1="21" x2="9" y2="9"/>
+              </svg>
+              All Certificates
+            </button>
+
+            <button
+              onClick={() => navigate("/university-management")}
+              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              University Management
+            </button>
+          </div>
         </div>
 
         {/* Stats Cards — 3 columns */}
@@ -471,6 +489,9 @@ export default function MoheDashboard() {
 
       {/* Log detail popup */}
       <LogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
+
+      {/* All System Certificates Modal */}
+      {showAllCerts && <AllSystemCertificate onClose={() => setShowAllCerts(false)} />}
 
       <style>{`
         @keyframes fadeSlideIn {
