@@ -288,9 +288,50 @@ export default function MoheDashboard() {
               </div>
               <h2 className="text-base font-extrabold text-gray-900 dark:text-white">Audit Log</h2>
             </div>
-            <span className="text-xs text-gray-400 dark:text-gray-500">
-              {!logsLoading && `${pagination.total} total entries`}
-            </span>
+            <div className="flex items-center gap-5">
+              {/* Page number pills */}
+              {pagination.totalPages > 1 && (
+                <div className="flex items-center gap-1.5 hidden sm:flex">
+                  {(() => {
+                    let startPage = Math.max(1, pagination.page - 2);
+                    let endPage = Math.min(pagination.totalPages, startPage + 4);
+                    
+                    if (endPage - startPage < 4) {
+                      startPage = Math.max(1, endPage - 4);
+                    }
+
+                    const pages = [];
+                    for (let p = startPage; p <= endPage; p++) {
+                      pages.push(
+                        <button
+                          key={p}
+                          onClick={() => fetchLogs(p)}
+                          className={`w-7 h-7 rounded-full text-xs font-bold transition-colors ${
+                            pagination.page === p
+                              ? "bg-blue-600 text-white ring-2 ring-blue-600 ring-offset-2 dark:ring-offset-gray-900"
+                              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                          }`}
+                        >
+                          {p}
+                        </button>
+                      );
+                    }
+                    return pages;
+                  })()}
+                </div>
+              )}
+              
+              <div className="flex items-center gap-3 sm:border-l border-gray-200 dark:border-gray-700 sm:pl-5">
+                {pagination.totalPages > 1 && (
+                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                    Page {pagination.page} of {pagination.totalPages}
+                  </span>
+                )}
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {!logsLoading && `${pagination.total} total entries`}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Table or states */}
@@ -406,42 +447,21 @@ export default function MoheDashboard() {
               {/* Pagination */}
               {pagination.totalPages > 1 && (
                 <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                  <p className="text-xs text-gray-400 dark:text-gray-500">
-                    Page {pagination.page} of {pagination.totalPages}
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => fetchLogs(pagination.page - 1)}
-                      disabled={pagination.page <= 1}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      ← Prev
-                    </button>
-                    {/* Page number pills */}
-                    {Array.from({ length: Math.min(pagination.totalPages, 5) }, (_, idx) => {
-                      const p = idx + 1;
-                      return (
-                        <button
-                          key={p}
-                          onClick={() => fetchLogs(p)}
-                          className={`w-8 h-8 rounded-lg text-xs font-bold transition-colors ${
-                            pagination.page === p
-                              ? "bg-blue-600 text-white"
-                              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                          }`}
-                        >
-                          {p}
-                        </button>
-                      );
-                    })}
-                    <button
-                      onClick={() => fetchLogs(pagination.page + 1)}
-                      disabled={pagination.page >= pagination.totalPages}
-                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Next →
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => fetchLogs(pagination.page - 1)}
+                    disabled={pagination.page <= 1}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    ← Previous
+                  </button>
+                  
+                  <button
+                    onClick={() => fetchLogs(pagination.page + 1)}
+                    disabled={pagination.page >= pagination.totalPages}
+                    className="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next →
+                  </button>
                 </div>
               )}
             </>
