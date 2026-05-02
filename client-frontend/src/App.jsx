@@ -17,6 +17,7 @@ import ManageAdmins from './pages/manage-admins';
 import StaffManagement from './pages/staff-management';
 import ScrollToTop from './componant/scroll';
 import { useLocation } from 'react-router-dom';
+import NotFound from "./pages/NotFound";  
 import Test from './pages/test';
 function Layout({ children }) {
   const location = useLocation();
@@ -100,7 +101,7 @@ export default function App() {
               <StaffManagement />
             </ProtectedRoute>
           } />
-
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
       <Footer className="pt-16" />
