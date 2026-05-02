@@ -17,7 +17,7 @@ async function enroll() {
     //Check if the identity even exists in the network (Optional check)
     try {
       await axios.get(`${url}/identities/${user}`, { headers });
-      console.log(`Identity found on network.`);
+      console.log(`Identity found on network. Creating membership....`);
     } catch (checkErr) {
       console.log(`Warning: Could not verify identity existence (Permission issue or not found), proceeding to enroll...`);
     }
