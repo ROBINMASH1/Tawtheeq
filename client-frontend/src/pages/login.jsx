@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API_URL from "../config/api";
@@ -11,30 +11,38 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
 
-const redirectByRole = (decoded) => {
-  const roleModel = decoded?.roleModel?.toLowerCase();
+  const redirectByRole = (decoded) => {
+    const roleModel = decoded?.roleModel?.toLowerCase();
 
-  switch (roleModel) {
-    case "student":
-      if (decoded?.isActive === false) return navigate("/profile-setup");
-      return navigate("/student-dashboard");
+    switch (roleModel) {
+      case "student":
+        if (decoded?.isActive === false) return navigate("/profile-setup");
+        return navigate("/student-dashboard");
 
-    case "uniuser": {
-      const subRole = decoded?.subRole?.toLowerCase();
-      if (subRole === "uniadmin") return navigate("/admin-dashboard");
-      if (subRole === "unistaff") return navigate("/staff-dashboard");
-      return navigate("/");
+      case "uniuser": {
+        const subRole = decoded?.subRole?.toLowerCase();
+        if (subRole === "uniadmin") return navigate("/admin-dashboard");
+        if (subRole === "unistaff") return navigate("/staff-dashboard");
+        return navigate("/");
+      }
+
+      case "moheadmin":
+        return navigate("/mohe-dashboard");
+
+      default:
+        return navigate("/");
     }
+  };
 
-    case "moheadmin":
-      return navigate("/mohe-dashboard");
-
-    default:
-      return navigate("/");
-  }
-};
+  // Redirect already-authenticated users to their dashboard
+  useEffect(() => {
+    if (!authLoading && user) {
+      redirectByRole(user);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, user]);
 
   const handleLogin = async () => {
     setError("");
