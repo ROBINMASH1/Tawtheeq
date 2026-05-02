@@ -61,7 +61,7 @@ export default function App() {
           } />
 
           <Route path="/profile-setup" element={
-            <ProtectedRoute allowedRoles={['student']}>
+            <ProtectedRoute profileSetupRoute>
               <ProfileSetup />
             </ProtectedRoute>
           } />

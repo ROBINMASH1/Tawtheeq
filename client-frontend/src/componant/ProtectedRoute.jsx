@@ -1,8 +1,9 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function ProtectedRoute({ children, allowedRoles,allowedsubRoles }) {
+export default function ProtectedRoute({ children, allowedRoles, allowedsubRoles, profileSetupRoute }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -16,16 +17,32 @@ export default function ProtectedRoute({ children, allowedRoles,allowedsubRoles 
 
   if (!user) return <Navigate to="/login" replace />;
 
-  // use roleModel instead of role, and for uniUser also check subRole
+  // Special handling for the profile-setup route itself
+  if (profileSetupRoute) {
+    // If student is already active, they don't need setup — send to dashboard
+    if (user.roleModel?.toLowerCase() === 'student' && user.isActive === true) {
+      return <Navigate to="/student-dashboard" replace />;
+    }
+    // Only students can access profile-setup
+    if (user.roleModel?.toLowerCase() !== 'student') {
+      return <Navigate to="/" replace />;
+    }
+    return children;
+  }
+
+  // For all other protected routes: if student is inactive, force profile-setup
+  if (user.roleModel?.toLowerCase() === 'student' && user.isActive === false) {
+    return <Navigate to="/profile-setup" />;
+  }
+
+  // Role-based access check
   if (allowedRoles && !allowedRoles.includes(user.roleModel?.toLowerCase())) {
     return <Navigate to="/" replace />;
   }
 
-   if (allowedsubRoles && !allowedsubRoles.includes(user.subRole?.toLowerCase())){
-    return <Navigate to="/" replace />; 
+  if (allowedsubRoles && !allowedsubRoles.includes(user.subRole?.toLowerCase())) {
+    return <Navigate to="/" replace />;
   }
-    
-  
 
   return children;
 }

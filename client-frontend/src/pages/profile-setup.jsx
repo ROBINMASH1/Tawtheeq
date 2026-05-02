@@ -5,7 +5,7 @@ import API_URL from "../config/api";
 import LoadingScreen from "../componant/LoadingScreen";
 
 export default function ProfileSetup() {
-  const { user } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
   // Step 1 state
@@ -132,7 +132,11 @@ export default function ProfileSetup() {
         setVerifyError(data.error || data.message || "Invalid OTP. Please try again.");
         return;
       }
-      navigate("/student-dashboard");
+      // Update the auth token so isActive becomes true in context
+      if (data.token) {
+        login(data.token);
+      }
+      navigate("/student-dashboard", { replace: true });
     } catch {
       setVerifyError("Unable to connect to the server. Please try again later.");
     } finally {
