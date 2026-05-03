@@ -112,7 +112,16 @@ exports.verifyById = async (req, res) => {
     }
     // 7. All checks passed — return verified certificate 
     res.json({
-      certificate: cert,
+      certificate: {
+        certificateId: cert.certificateId,
+        user: { name: cert.user?.name },
+        university: { name: cert.university?.name },
+        status: cert.status,
+        degree: cert.degree,
+        major: cert.major,
+        gpa: cert.gpa,
+        graduationDate: cert.graduationDate,
+      },
     });
   } catch (error) {
     console.error("Verification Error:", error);
