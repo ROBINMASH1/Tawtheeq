@@ -1,5 +1,4 @@
 require("dotenv").config();
-
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const { connectDB } = require("../config/db");
@@ -9,160 +8,99 @@ const UniUser = require("../models/uniUsers.model");
 const MoheAdmin = require("../models/moheAdmins.model");
 const University = require("../models/universities.model");
 const Student = require("../models/students.model");
+const Certificate = require("../models/certificates.model");
 
 const SALT_ROUNDS = 12;
-
-// ── Seed Data ────────────────────────────────────────────────────────────────
-
-const universityData = {
-  orgId: "UNI-001",
-  name: "King Abdullah University",
-  licenseNumber: "LIC-2024-0001",
-  address: "Riyadh, Saudi Arabia",
-  contactEmail: "contact@kau.edu.sa",
-};
-
-const adminData = {
-  identifier: "admin001",
-  name: "System Admin",
-  password: "Admin@1234",
-  role: "Uniadmin",
-};
-
-const moheAdminData = {
-  identifier: "mohe001",
-  name: "MOHE Super Admin",
-  password: "Mohe@1234",
-  EmployeeID: "EMP-MOHE-001",
-};
-
-const studentData = {
-  identifier: "2200112233",
-  name: "Ali Abdullah",
-  password: "Student@1234",
-  phone: "+966500000000",
-  email: "ali.abdullah@student.edu.sa",
-  isActive: true,
-};
-
-// ── Main ─────────────────────────────────────────────────────────────────────
 
 async function seed() {
   try {
     await connectDB();
     console.log("✅ Connected to MongoDB");
 
-    // ── Clear existing seed data (idempotent) ──────────────────────────────
-    await University.deleteOne({ orgId: universityData.orgId });
+    // Clear existing data for a fresh start
+    await Promise.all([
+      User.deleteMany({}),
+      UniUser.deleteMany({}),
+      MoheAdmin.deleteMany({}),
+      University.deleteMany({}),
+      Student.deleteMany({}),
+      Certificate.deleteMany({}),
+    ]);
+    console.log("🧹 Database cleared");
 
-    const oldAdmin = await User.findOne({ identifier: adminData.identifier });
-    if (oldAdmin) {
-      await UniUser.deleteOne({ _id: oldAdmin.profile });
-      await User.deleteOne({ _id: oldAdmin._id });
-    }
-
-    const oldMohe = await User.findOne({ identifier: moheAdminData.identifier });
-    if (oldMohe) {
-      await MoheAdmin.deleteOne({ _id: oldMohe.profile });
-      await User.deleteOne({ _id: oldMohe._id });
-    }
-
-    const oldStudent = await User.findOne({ identifier: studentData.identifier });
-    if (oldStudent) {
-      await Student.deleteOne({ _id: oldStudent.profile });
-      await User.deleteOne({ _id: oldStudent._id });
-    }
-    console.log("🧹 Cleared old seed data");
-
-    // ── Create University ──────────────────────────────────────────────────
-    const university = await University.create(universityData);
-    console.log(
-      `🏛️  University created: ${university.name} (${university._id})`,
-    );
-
-    // ── Create UniUser profile ─────────────────────────────────────────────
-    const uniUserProfile = await UniUser.create({
-      role: adminData.role,
-      university: university._id,
-    });
-    console.log(`👤 UniUser profile created (${uniUserProfile._id})`);
-
-    // ── Create User account ────────────────────────────────────────────────
-    const passwordHash = await bcrypt.hash(adminData.password, SALT_ROUNDS);
-    const user = await User.create({
-      identifier: adminData.identifier,
-      name: adminData.name,
-      passwordHash,
-      roleModel: "uniUser",
-      profile: uniUserProfile._id,
-    });
-    console.log(`✅ User account created: ${user.identifier} (${user._id})`);
-
-    // ── Create MOHEAdmin profile ───────────────────────────────────────────
-    const moheProfile = await MoheAdmin.create({
-      EmployeeID: moheAdminData.EmployeeID,
-    });
-    console.log(`👤 MOHEAdmin profile created (${moheProfile._id})`);
-
-    // ── Create MOHEAdmin User account ──────────────────────────────────────
-    const mohePasswordHash = await bcrypt.hash(
-      moheAdminData.password,
-      SALT_ROUNDS,
-    );
-    const moheUser = await User.create({
-      identifier: moheAdminData.identifier,
-      name: moheAdminData.name,
-      passwordHash: mohePasswordHash,
+    // 1. Create MOHE Admin
+    const moheProfile = await MoheAdmin.create({ EmployeeID: "MOHE-001" });
+    await User.create({
+      identifier: "mohe_admin",
+      name: "MOHE Admin",
+      passwordHash: await bcrypt.hash("Mohe@123", SALT_ROUNDS),
       roleModel: "MoheAdmin",
       profile: moheProfile._id,
     });
-    console.log(
-      `✅ MOHEAdmin account created: ${moheUser.identifier} (${moheUser._id})`,
-    );
+    console.log("👤 MOHE Admin created");
 
-    // ── Create Student profile ─────────────────────────────────────────────
-    const studentProfile = await Student.create({
-      phone: studentData.phone,
-      email: studentData.email,
-      isActive: studentData.isActive,
+    // 2. Create University
+    const university = await University.create({
+      orgId: "UNI-01",
+      name: "Demo University",
+      licenseNumber: "LIC-001",
+      address: "Riyadh",
+      contactEmail: "demo@uni.edu.sa",
     });
-    console.log(`👤 Student profile created (${studentProfile._id})`);
+    console.log("🏛️  University created");
 
-    // ── Create Student User account ────────────────────────────────────────
-    const studentPasswordHash = await bcrypt.hash(
-      studentData.password,
-      SALT_ROUNDS,
-    );
+    // 3. Create University Admin
+    const adminProfile = await UniUser.create({
+      role: "Uniadmin",
+      university: university._id,
+    });
+    const uniAdmin = await User.create({
+      identifier: "uni_admin",
+      name: "University Admin",
+      passwordHash: await bcrypt.hash("Uni@123", SALT_ROUNDS),
+      roleModel: "uniUser",
+      profile: adminProfile._id,
+    });
+    console.log("👤 University Admin created");
+
+    // 4. Create Student
+    const studentProfile = await Student.create({
+      phone: "+966500000000",
+      email: "student@demo.com",
+      isActive: true,
+    });
     const studentUser = await User.create({
-      identifier: studentData.identifier,
-      name: studentData.name,
-      passwordHash: studentPasswordHash,
+      identifier: "2200112233",
+      name: "Ali Student",
+      passwordHash: await bcrypt.hash("Student@123", SALT_ROUNDS),
       roleModel: "Student",
       profile: studentProfile._id,
     });
-    console.log(
-      `✅ Student account created: ${studentUser.identifier} (${studentUser._id})`,
-    );
+    console.log("👤 Student created");
 
-    // ── Summary ────────────────────────────────────────────────────────────
-    console.log("\n─────────────────────────────────────────");
-    console.log("🌱 Seed complete! Login credentials:");
-    console.log(
-      `   UniAdmin    → ${adminData.identifier} / ${adminData.password}`,
-    );
-    console.log(
-      `   MOHEAdmin   → ${moheAdminData.identifier} / ${moheAdminData.password}`,
-    );
-    console.log(
-      `   Student     → ${studentData.identifier} / ${studentData.password}`,
-    );
-    console.log("─────────────────────────────────────────\n");
+    // 5. Create Certificate
+    await Certificate.create({
+      certificateId: "CERT-2025-001",
+      user: studentUser._id,
+      university: university._id,
+      studentId: "S123",
+      personalId: "2200112233",
+      ipfsHash: "QmDemoHash123",
+      blockchainTxHash: "0xDemoTxHash",
+      status: "verified",
+      degree: "Bachelor",
+      major: "Computer Science",
+      gpa: 4.5,
+      graduationDate: new Date(),
+      issuedBy: uniAdmin._id,
+    });
+    console.log("📜 Certificate created");
+
+    console.log("\n🚀 Simple Seed Complete!");
   } catch (err) {
-    console.error("❌ Seeding failed:", err.message || err);
-    process.exit(1);
+    console.error("❌ Seed failed:", err);
   } finally {
     await mongoose.disconnect();
-    console.log("🔌 Disconnected from MongoDB");
   }
 }
 
