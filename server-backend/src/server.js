@@ -3,6 +3,7 @@ const { connectDB } = require("./config/db");
 const cors = require("cors");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./config/swagger.json");
+const basicAuth = require("express-basic-auth");
 const path = require("path");
 require("dotenv").config();
 
@@ -16,7 +17,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(
+  "/api-docs",
+  basicAuth({
+    users: { [process.env.SWAGGER_USER]: process.env.SWAGGER_PASSWORD },
+    challenge: true,
+  }),
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument)
+);
 
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/students", require("./routes/students.routes"));
