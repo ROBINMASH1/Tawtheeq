@@ -120,11 +120,13 @@ const getAllUniStaff = async (req, res) => {
 
     const universityId = callerProfile.university;
 
-    // Find all UniStaff profiles for this university
+    // Find all UniStaff profiles for this university and populate the creator
     const staffProfiles = await UniUser.find({
       university: universityId,
       role: "UniStaff",
-    }).lean();
+    })
+      .populate("createdBy", "name identifier")
+      .lean();
 
     const profileIds = staffProfiles.map((p) => p._id);
 
@@ -136,8 +138,9 @@ const getAllUniStaff = async (req, res) => {
     // Merge user info with profile info
     const result = staffUsers.map((user) => {
       const profile = staffProfiles.find(
-        (p) => p._id.toString() === user.profile.toString(),
+        (p) => p._id.toString() === user.profile.toString()
       );
+
       return {
         _id: user._id,
         identifier: user.identifier,
@@ -145,7 +148,7 @@ const getAllUniStaff = async (req, res) => {
         isLocked: user.isLocked,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
-        createdBy: profile?.createdBy || null,
+        createdBy: profile?.createdBy?.identifier || "System",
       };
     });
 
