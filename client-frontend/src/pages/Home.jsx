@@ -189,7 +189,7 @@ export default function Home() {
       </section>
 
       {/* Why Tawtheeq Section */}
-      <section className="bg-gray-200 dark:bg-gray-900 py-24 px-8">
+      <section className="bg-gray-200 dark:bg-gray-900 py-24 px-8 border-t border-gray-400 dark:border-gray-800">
         <div className="max-w-7xl mx-auto">
 
           {/* Heading */}

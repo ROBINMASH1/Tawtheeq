@@ -64,7 +64,7 @@ export default function Verify() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 px-4 sm:px-8 py-12 sm:py-20 transition-colors duration-300">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 px-4 sm:px-8 py-12 sm:py-20 transition-colors duration-300">
       {loading && <LoadingScreen />}
       <div className="max-w-3xl mx-auto">
 
