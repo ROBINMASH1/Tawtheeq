@@ -287,19 +287,41 @@ export default function UniversityManagement() {
         </p>
       </>
     ) : (
-     <div className="flex items-center justify-between w-full">
-            <div className="flex-2 flex flex-col items-center text-center">
-              <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
-                University Management
-              </h1>
+      <div className="flex items-center justify-between w-full">
+        {/* Left: Back Button */}
+        <div className="flex-1 flex justify-start">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center justify-center w-12 h-12 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white shadow-sm transition-colors"
+          >
+            <svg
+              className="w-5 h-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="19" y1="12" x2="5" y2="12" />
+              <polyline points="12 19 5 12 12 5" />
+            </svg>
+          </button>
+        </div>
 
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {universities.length} registered{" "}
-                {universities.length === 1 ? "university" : "universities"}
-              </p>
-            </div>
+        {/* Center: Title & Subtitle */}
+        <div className="flex flex-col items-center text-center shrink-0 mx-4">
+          <h1 className="text-2xl font-extrabold text-gray-900 dark:text-white">
+            University Management
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            {universities.length} registered{" "}
+            {universities.length === 1 ? "university" : "universities"}
+          </p>
+        </div>
           
-        <div className="flex justify-end items-center gap-3">
+        {/* Right: Actions */}
+        <div className="flex-1 flex justify-end items-center gap-3">
           <button
             onClick={() => navigate('/manage-admins')}
             className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all shadow-sm"
@@ -310,7 +332,7 @@ export default function UniversityManagement() {
               <path d="M23 21v-2a4 4 0 00-3-3.87"/>
               <path d="M16 3.13a4 4 0 010 7.75"/>
             </svg>
-            Manage Admins
+            <span className="hidden sm:inline">Manage Admins</span>
           </button>
 
           <button
@@ -321,7 +343,7 @@ export default function UniversityManagement() {
               <line x1="12" y1="5" x2="12" y2="19"/>
               <line x1="5" y1="12" x2="19" y2="12"/>
             </svg>
-            Create University
+            <span className="hidden sm:inline">Create University</span>
           </button>
         </div>
       </div>    )}
