@@ -358,7 +358,7 @@ export default function IssueCertificateModal({ onClose }) {
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 z-50 bg-gray-50 dark:bg-gray-950 overflow-y-auto">
+      <div className="fixed inset-0 z-50 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
         <div className="min-h-screen px-4 py-8 max-w-4xl mx-auto">
 
           {/* Header */}

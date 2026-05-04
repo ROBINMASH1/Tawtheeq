@@ -93,7 +93,7 @@ export default function StudentDashboard() {
   const truncate = (str, len = 16) => str ? `${str.slice(0, len)}...` : '—';
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <main className="pt-20 px-8 max-w-7xl mx-auto">
 
         {/* Welcome banner */}

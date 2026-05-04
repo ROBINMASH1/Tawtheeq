@@ -223,7 +223,7 @@ export default function UniversityManagement() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {loading && <LoadingScreen />}  
       <main className="pt-20 px-8 max-w-7xl mx-auto pb-16">
 

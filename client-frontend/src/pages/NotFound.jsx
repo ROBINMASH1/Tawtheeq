@@ -12,7 +12,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center px-6 overflow-hidden relative">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-6 overflow-hidden relative">
 
       {/* ── Decorative background grid ── */}
       <div

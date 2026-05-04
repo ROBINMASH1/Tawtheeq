@@ -103,7 +103,7 @@ export default function AllSystemCertificate({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-gray-50 dark:bg-gray-950 overflow-hidden" style={{ animation: "fadeIn 0.3s ease" }}>
+    <div className="fixed inset-0 z-50 flex flex-col bg-gray-50 dark:bg-gray-900 overflow-hidden" style={{ animation: "fadeIn 0.3s ease" }}>
       {/* Header Bar */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center gap-4 shrink-0 shadow-sm">
         <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
