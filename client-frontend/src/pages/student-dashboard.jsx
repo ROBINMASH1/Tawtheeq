@@ -98,7 +98,7 @@ export default function StudentDashboard() {
 
         {/* Welcome banner */}
         <div
-          className="mt-8 bg-white dark:bg-gray-900 rounded-2xl px-8 py-6 flex items-center justify-between shadow-sm"
+          className="mt-8 bg-white dark:bg-gray-800 rounded-2xl px-8 py-6 flex items-center justify-between shadow-sm"
           style={{ animation: 'fadeSlideIn 0.5s ease forwards' }}
         >
           <div>
@@ -116,7 +116,7 @@ export default function StudentDashboard() {
 
         {/* Stats cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm border border-green-200 dark:border-green-800 flex items-center justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-sm border border-green-200 dark:border-green-800 flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Total Credentials</p>
               <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.totalCredentials}</p>
@@ -130,7 +130,7 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Verified</p>
               <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.verified}</p>
@@ -143,7 +143,7 @@ export default function StudentDashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl px-6 py-5 shadow-sm flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Recent Shares</p>
               <p className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{stats.recentShares}</p>
@@ -162,7 +162,7 @@ export default function StudentDashboard() {
         <div className="mt-10 mb-16">
           <h2 className="text-xl font-extrabold text-gray-900 dark:text-white mb-6">My Credentials</h2>
 
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
 
             {loading ? (
               <div className="flex flex-col gap-4 p-6">

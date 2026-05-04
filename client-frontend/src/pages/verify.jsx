@@ -127,7 +127,7 @@ export default function Verify() {
         {/* ── RESULT CARD ── */}
         {result && (
           <div
-            className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden transition-colors duration-300"
+            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden transition-colors duration-300"
             style={{ animation: 'fadeSlideIn 0.4s ease forwards' }}
           >
             {/* Result heading */}
