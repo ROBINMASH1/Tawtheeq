@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function Home() {
   return (
-    <div className="bg-white dark:bg-gray-950 min-h-screen">
+    <div className="bg-white dark:bg-gray-900 min-h-screen">
 
       {/* Hero Section */}
       <section

@@ -109,7 +109,7 @@ export default function ForgotPassword() {
 
       {/* Left — Form Panel */}
       <div
-        className="w-full lg:w-1/2 bg-white dark:bg-gray-950 flex items-center justify-center px-8 py-16"
+        className="w-full lg:w-1/2 bg-white dark:bg-gray-900 flex items-center justify-center px-8 py-16"
         style={{ animation: 'fadeSlideIn 0.6s ease forwards' }}
       >
         <div className="w-full max-w-md flex flex-col gap-8">
