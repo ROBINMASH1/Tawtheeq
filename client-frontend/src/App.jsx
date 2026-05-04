@@ -18,7 +18,7 @@ import StaffManagement from './pages/staff-management';
 import ScrollToTop from './componant/scroll';
 import { useLocation } from 'react-router-dom';
 import NotFound from "./pages/NotFound";  
-import Test from './pages/test';
+
 function Layout({ children }) {
   const location = useLocation();
 
@@ -53,7 +53,7 @@ export default function App() {
           <Route path="/verify/:certificateId" element={<Verify />} className="pt-16" />
           <Route path="/login" element={<Login />} className="pt-16" />
           <Route path="/forgot-password" element={<ForgotPassword />} className="pt-16" />
-          <Route path="/test" element={<Test />} className="pt-16" />
+          
 
           <Route path="/student-dashboard" element={
             <ProtectedRoute allowedRoles={['student']}>

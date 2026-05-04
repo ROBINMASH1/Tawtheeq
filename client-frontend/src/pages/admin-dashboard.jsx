@@ -223,10 +223,10 @@ export default function AdminDashboard() {
         )}
 
         {/* Certificates Table */}
-        <div className="mt-8 mb-16 bg-white dark:bg-gray-900 rounded-2xl shadow-sm overflow-hidden">
+        <div className="mt-8 mb-16 bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
 
           {/* Table header */}
-          <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-700 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 ">
             <h2 className="text-base font-extrabold text-gray-900 dark:text-white">Issued Certificates</h2>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
 
