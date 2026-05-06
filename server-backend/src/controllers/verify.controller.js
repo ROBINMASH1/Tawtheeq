@@ -21,7 +21,9 @@ exports.verifyById = async (req, res) => {
 
     // 2. Check local revocation status 
     if (cert.status === 'revoked') {
-      return res.status(400).json({ error: "Certificate has been revoked", status: "revoked" });
+      const revockedlog = await AuditLog.findOne({ targetId: cert._id, actionType: "REVOKE_CERTIFICATE" });
+      const revockedReason = revockedlog.details.split("Reason: ")[1];
+      return res.status(400).json({ error: "Certificate has been revoked", status: "revoked", reason: revockedReason });
     }
 
     // 3. Query blockchain 
