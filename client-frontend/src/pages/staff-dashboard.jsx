@@ -21,7 +21,7 @@ export default function StaffDashboard() {
 
   // Modals
   const [showCreateStudent, setShowCreateStudent] = useState(false);
-  const [createForm, setCreateForm] = useState({ personalId: "", name: "" });
+  const [createForm, setCreateForm] = useState({ personalId: "", firstName: "", secondName: "", thirdName: "", lastName: "" });
   const [createError, setCreateError] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
   const [createResult, setCreateResult] = useState(null);
@@ -58,8 +58,10 @@ export default function StaffDashboard() {
 
   const handleCreateStudent = async () => {
     setCreateError("");
-    const { personalId, name } = createForm;
-    if (!personalId || !name) { setCreateError("Both fields are required."); return; }
+    const { personalId, firstName, secondName, thirdName, lastName } = createForm;
+    if (!personalId || !firstName || !lastName) { setCreateError("Personal ID, First Name, and Last Name are required."); return; }
+    if (personalId.length !== 10 || !/^\d+$/.test(personalId)) { setCreateError("Personal ID must be exactly 10 digits."); return; }
+    const name = [firstName, secondName, thirdName, lastName].filter(n => n.trim()).join(" ");
     setCreateLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/students/create`, {
@@ -70,7 +72,7 @@ export default function StaffDashboard() {
       const data = await res.json();
       if (!res.ok) { setCreateError(data.error, data.message || "Failed to create student account."); return; }
       setCreateResult(data);
-      setCreateForm({ personalId: "", name: "" });
+      setCreateForm({ personalId: "", firstName: "", secondName: "", thirdName: "", lastName: "" });
       setShowCreateStudent(false);
     } catch {
       setCreateError("Server error. Please try again.");
@@ -197,7 +199,7 @@ export default function StaffDashboard() {
 
             {/* Create Student Account */}
             <button
-              onClick={() => { setShowCreateStudent(true); setCreateError(""); setCreateForm({ personalId: "", name: "" }); }}
+              onClick={() => { setShowCreateStudent(true); setCreateError(""); setCreateForm({ personalId: "", firstName: "", secondName: "", thirdName: "", lastName: "" }); }}
               className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -448,17 +450,29 @@ export default function StaffDashboard() {
 
             <div className="flex flex-col gap-4">
               {[
-                { label: "Personal ID", key: "personalId", placeholder: "e.g. 1234567890", type: "text" },
-                { label: "Full Name", key: "name", placeholder: "e.g. Ahmed Ali", type: "text" },
-              ].map(({ label, key, placeholder, type }) => (
+                { label: "Personal ID", key: "personalId", placeholder: "e.g. 1234567890", type: "text", required: true },
+                { label: "First Name", key: "firstName", placeholder: "e.g. Ahmed", type: "text", required: true },
+                { label: "Second Name", key: "secondName", placeholder: "e.g. Mohammed", type: "text", required: false },
+                { label: "Third Name", key: "thirdName", placeholder: "e.g. Ali", type: "text", required: false },
+                { label: "Last Name", key: "lastName", placeholder: "e.g. Al-Rashid", type: "text", required: true },
+              ].map(({ label, key, placeholder, type, required }) => (
                 <div key={key} className="flex flex-col gap-1.5">
-                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">{label}</label>
+                  <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                    {label} {required && <span className="text-red-400">*</span>}
+                  </label>
                   <input
                     type={type}
                     value={createForm[key]}
-                    onChange={(e) => setCreateForm((prev) => ({ ...prev, [key]: e.target.value }))}
+                    onChange={(e) => {
+                      let val = e.target.value;
+                      if (key === "personalId") {
+                        val = val.replace(/\D/g, "").slice(0, 10);
+                      }
+                      setCreateForm((prev) => ({ ...prev, [key]: val }));
+                    }}
                     onKeyDown={(e) => e.key === "Enter" && handleCreateStudent()}
                     placeholder={placeholder}
+                    maxLength={key === "personalId" ? 10 : undefined}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 transition text-sm"
                   />
                 </div>
