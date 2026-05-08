@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../context/AuthContext";
 import API_URL from "../config/api";
 import IssueCertificateModal from '../componant/modals/IssueCertificateModal ';
+import ProfileModal from '../componant/modals/ProfileModal';
 
 export default function StaffDashboard() {
   const { user } = useAuth();
@@ -27,6 +28,7 @@ export default function StaffDashboard() {
   const [copied, setCopied] = useState({});
   const [copiedAll, setCopiedAll] = useState(false);
     const [showIssueModal, setShowIssueModal] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   const token = localStorage.getItem("token");
   const authHeader = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
@@ -208,6 +210,16 @@ export default function StaffDashboard() {
             </button>
 
           </div>
+
+          {/* Profile */}
+            <button
+              onClick={() => setShowProfile(true)}
+              className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Profile
+            </button>
+
         </div>
 
         {/* Recent Issuances */}
@@ -630,6 +642,7 @@ export default function StaffDashboard() {
         }
       `}</style>
       {showIssueModal && <IssueCertificateModal onClose={() => setShowIssueModal(false)} />}
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
     </div>
   );
 }
