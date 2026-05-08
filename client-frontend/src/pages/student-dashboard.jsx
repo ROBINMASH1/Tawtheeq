@@ -1,6 +1,7 @@
 import { useAuth } from '../context/AuthContext';
 import { useState, useEffect } from 'react';
 import API_URL from "../config/api.js"
+import ProfileModal from '../componant/modals/ProfileModal';
 
 
 export default function StudentDashboard() {
@@ -14,6 +15,7 @@ export default function StudentDashboard() {
   const [downloadLoading, setDownloadLoading] = useState(null);
   const [copied, setCopied] = useState(false);
   const [recentShares, setRecentShares] = useState(0);
+  const [showProfile, setShowProfile] = useState(false);
 
   const token = localStorage.getItem('token');
   const authHeader = { Authorization: `Bearer ${token}` };
@@ -109,9 +111,13 @@ export default function StudentDashboard() {
               Manage and share your academic credentials securely.
             </p>
           </div>
-          <div className="w-14 h-14 rounded-2xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400 font-bold text-2xl">
-            {(user?.name || user?.identifier || 'S')[0].toUpperCase()}
-          </div>
+          <button
+            onClick={() => setShowProfile(true)}
+            className="flex items-center gap-2 bg-green-500 hover:bg-green-600 active:scale-95 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </button>
         </div>
 
         {/* Stats cards */}
@@ -388,6 +394,8 @@ export default function StudentDashboard() {
           </div>
         </div>
       )}
+
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
 
       <style>{`
         @keyframes fadeSlideIn {

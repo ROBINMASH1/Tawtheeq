@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import IssueCertificateModal from '../componant/modals/IssueCertificateModal ';
 import API_URL from "../config/api";
 import RevokeCertificateModal from "../componant/modals/RevokeCertificateModal";
+import ProfileModal from "../componant/modals/ProfileModal";
 
 export default function AdminDashboard() {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ export default function AdminDashboard() {
   const [revokeTargetId, setRevokeTargetId] = useState("");
   const [selectedCert, setSelectedCert] = useState(null);
   const [stats, setStats] = useState({ totalIssued: 0, totalRevoked: 0, totalVerifications: 0 });
+  const [showProfile, setShowProfile] = useState(false);
 
   // ── Fetch certificates ─────────────────────────────────────────────────────
   const fetchCertificates = useCallback(async (pg = 1) => {
@@ -155,6 +157,12 @@ export default function AdminDashboard() {
                 <path d="M16 3.13a4 4 0 010 7.75" />
               </svg>
               Staff Management
+            </button>
+
+            {/* Profile */}
+            <button onClick={() => setShowProfile(true)} className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Profile
             </button>
 
           </div>
@@ -430,6 +438,7 @@ export default function AdminDashboard() {
           onRevoked={() => { fetchCertificates(page); fetchStats(); }}
         />
       )}
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
 
       {/* ── CERTIFICATE DETAIL MODAL ── */}
       {selectedCert && (

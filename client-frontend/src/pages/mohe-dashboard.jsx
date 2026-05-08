@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../config/api";
 import AllSystemCertificate from "../componant/modals/AllSystemCertificate";
+import ProfileModal from "../componant/modals/ProfileModal";
 
 /* ─── Log Detail Modal ──────────────────────────────────────────────────── */
 function LogDetailModal({ log, onClose }) {
@@ -118,6 +119,7 @@ export default function MoheDashboard() {
 
   /* Modals */
   const [showAllCerts, setShowAllCerts] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
 
   /* ── Fetch stats ────────────────────────────────────────────────────── */
   useEffect(() => {
@@ -260,6 +262,14 @@ export default function MoheDashboard() {
                 <polyline points="9 22 9 12 15 12 15 22"/>
               </svg>
               University Management
+            </button>
+
+            <button
+              onClick={() => setShowProfile(true)}
+              className="flex items-center justify-center gap-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-95 text-gray-700 dark:text-gray-200 text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Profile
             </button>
           </div>
         </div>
@@ -490,8 +500,9 @@ export default function MoheDashboard() {
       {/* Log detail popup */}
       <LogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
 
-      {/* All System Certificates Modal */}
       {showAllCerts && <AllSystemCertificate onClose={() => setShowAllCerts(false)} />}
+
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
 
       <style>{`
         @keyframes fadeSlideIn {
