@@ -68,16 +68,22 @@ const login = async (req, res) => {
 
 const resetPassword = async (req, res) => {
   try {
-    const { password } = req.body;
+    const { password, oldPassword } = req.body;
     const userId = req.user._id;
 
-    if (!password) {
-      return res.status(400).json({ error: "Password is required" });
+    if (!password || !oldPassword) {
+      return res.status(400).json({ error: "New password and old password are required" });
     }
 
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verify the old password matches
+    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid old password" });
     }
 
     const comparePassword = await bcrypt.compare(password, user.passwordHash);
