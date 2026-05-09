@@ -66,4 +66,40 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const resetPassword = async (req, res) => {
+  try {
+    const { password, oldPassword } = req.body;
+    const userId = req.user._id;
+
+    if (!password || !oldPassword) {
+      return res.status(400).json({ error: "New password and old password are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Verify the old password matches
+    const isMatch = await bcrypt.compare(oldPassword, user.passwordHash);
+    if (!isMatch) {
+      return res.status(401).json({ error: "Invalid old password" });
+    }
+
+    const comparePassword = await bcrypt.compare(password, user.passwordHash);
+    if (comparePassword) {
+      return res.status(400).json({ error: "Password can't be same as old password" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    user.passwordHash = passwordHash;
+    await user.save();
+
+    return res.status(200).json({ message: "Password reset successful" });
+  } catch (err) {
+    console.error("Reset password error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { login, resetPassword };

@@ -335,4 +335,126 @@ const verifyOTPForgotPassword = async (req, res) => {
   }
 };
 
-module.exports = { createStudent, requestActivationOTP, verifyOTP, sendOTPForgotPassword, verifyOTPForgotPassword };
+const requestChangeEmailOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userId = req.user._id;
+
+    if (!email) {
+      return res.status(400).json({ error: "New email is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const emailTaken = await Student.findOne({
+      email,
+      _id: { $ne: user.profile },
+    });
+    if (emailTaken) {
+      return res.status(409).json({ error: "Email is already in use" });
+    }
+
+    // Generate and send a 6-digit OTP
+    const otp = String(Math.floor(100000 + Math.random() * 900000));
+    await OTP.findOneAndDelete({ identifier: user.identifier }); // clear old OTP
+    await OTP.create({ identifier: user.identifier, otp });
+
+    // Send OTP to the new email to verify ownership
+    await sendOTPEmail(email, otp);
+
+    return res.status(200).json({
+      message: "OTP sent to your new email. Please verify to complete the change.",
+    });
+  } catch (err) {
+    console.error("Request change email OTP error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const changeEmail = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const userId = req.user._id;
+
+    if (!email || !otp) {
+      return res.status(400).json({ error: "New email and OTP are required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const studentProfile = await Student.findById(user.profile);
+    if (!studentProfile) {
+      return res.status(404).json({ error: "Student profile not found" });
+    }
+
+    const emailTaken = await Student.findOne({
+      email,
+      _id: { $ne: user.profile },
+    });
+    if (emailTaken) {
+      return res.status(409).json({ error: "Email is already in use" });
+    }
+
+    // Verify OTP
+    const otpRecord = await OTP.findOne({ identifier: user.identifier });
+    if (!otpRecord || otpRecord.otp !== otp) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
+
+    studentProfile.email = email;
+    await studentProfile.save();
+
+    // Clean up OTP record
+    await OTP.findOneAndDelete({ identifier: user.identifier });
+
+    return res.status(200).json({ message: "Email changed successfully." });
+  } catch (err) {
+    console.error("Change email error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const changePhoneNumber = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    const userId = req.user._id;
+
+    if (!phone) {
+      return res.status(400).json({ error: "Phone number is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const studentProfile = await Student.findById(user.profile);
+    if (!studentProfile) {
+      return res.status(404).json({ error: "Student profile not found" });
+    }
+
+    const phoneTaken = await Student.findOne({
+      phone,
+      _id: { $ne: user.profile },
+    });
+    if (phoneTaken) {
+      return res.status(409).json({ error: "Phone number is already in use" });
+    }
+
+    studentProfile.phone = phone;
+    await studentProfile.save();
+
+    return res.status(200).json({ message: "Phone number changed successfully." });
+  } catch (err) {
+    console.error("Change phone number error:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = { createStudent, requestActivationOTP, verifyOTP, sendOTPForgotPassword, verifyOTPForgotPassword, requestChangeEmailOTP, changeEmail, changePhoneNumber };
