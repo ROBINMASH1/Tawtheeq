@@ -13,11 +13,10 @@ router.post("/send-otp-forgot-password", studentController.sendOTPForgotPassword
 
 router.post("/verify-otp-forgot-password", studentController.verifyOTPForgotPassword);
 
-//Change email
-//router.post("/change-email", authMiddleware, requireRole("Student"), studentController.changeEmail);
+router.post("/request-change-email-otp", authMiddleware, requireRole("Student"), studentController.requestChangeEmailOTP);
 
-//Change phone number
-//router.post("/change-phone-number", authMiddleware, requireRole("Student"), studentController.changePhoneNumber);
+router.post("/change-email", authMiddleware, requireRole("Student"), studentController.changeEmail);
 
+router.post("/change-phone-number", authMiddleware, requireRole("Student"), studentController.changePhoneNumber);
 
 module.exports = router;
