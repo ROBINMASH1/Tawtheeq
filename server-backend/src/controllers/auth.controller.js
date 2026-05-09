@@ -66,7 +66,7 @@ const login = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+const changePassword = async (req, res) => {
   try {
     const { password, oldPassword } = req.body;
     const userId = req.user._id;
@@ -97,9 +97,9 @@ const resetPassword = async (req, res) => {
 
     return res.status(200).json({ message: "Password reset successful" });
   } catch (err) {
-    console.error("Reset password error:", err);
+    console.error("Change password error:", err);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
 
-module.exports = { login, resetPassword };
+module.exports = { login, changePassword };

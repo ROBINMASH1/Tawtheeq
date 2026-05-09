@@ -1,9 +1,10 @@
 const router = require("express").Router();
 const authController = require("../controllers/auth.controller");
+const { authMiddleware } = require('../middleware/jwtAuth');
 
 router.post("/login", authController.login);
 
-//reset password to all roles
-router.patch("/reset-password", authMiddleware, authController.resetPassword);
+//change password to all roles
+router.patch("/change-password", authMiddleware, authController.changePassword);
 
 module.exports = router;
