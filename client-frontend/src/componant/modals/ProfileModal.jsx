@@ -16,7 +16,8 @@ export default function ProfileModal({ onClose }) {
   // Info state
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phone || "");
-  const [infoLoading, setInfoLoading] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [phoneLoading, setPhoneLoading] = useState(false);
   const [infoMsg, setInfoMsg] = useState("");
   const [infoErr, setInfoErr] = useState("");
 
@@ -48,28 +49,43 @@ export default function ProfileModal({ onClose }) {
 
   const fmtTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
 
-  // ── Update Info (student only) ──
-  const handleUpdateInfo = async () => {
+  // ── Update Email ──
+  const handleChangeEmail = async () => {
     setInfoErr(""); setInfoMsg("");
-    if (!email && !phone) { setInfoErr("Please provide email or phone."); return; }
-    setInfoLoading(true);
+    if (!email) { setInfoErr("Please provide email."); return; }
+    if (email === user?.email) { setInfoErr("New email is the same as current email."); return; }
+    setEmailLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/students/update-profile`, {
-        method: "PUT", headers: authHeader,
-        body: JSON.stringify({ phone, email }),
+      const res = await fetch(`${API_URL}/api/students/request-change-email-otp`, {
+        method: "POST", headers: authHeader,
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setInfoErr(data.error || data.message || "Request failed."); return; }
+      setPendingEmail(email);
+      setOtpMode(true);
+      setTimer(300);
+      setInfoMsg("OTP sent to your new email. Please verify.");
+    } catch { setInfoErr("Server error. Please try again."); }
+    finally { setEmailLoading(false); }
+  };
+
+  // ── Update Phone ──
+  const handleChangePhone = async () => {
+    setInfoErr(""); setInfoMsg("");
+    if (!phone) { setInfoErr("Please provide phone."); return; }
+    if (phone === user?.phone) { setInfoErr("New phone is the same as current phone."); return; }
+    setPhoneLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/students/change-phone-number`, {
+        method: "POST", headers: authHeader,
+        body: JSON.stringify({ phone }),
       });
       const data = await res.json();
       if (!res.ok) { setInfoErr(data.error || data.message || "Update failed."); return; }
-      if (data.emailPending) {
-        setPendingEmail(email);
-        setOtpMode(true);
-        setTimer(300);
-        setInfoMsg("OTP sent to your new email. Please verify.");
-      } else {
-        setInfoMsg(data.message || "Profile updated successfully.");
-      }
+      setInfoMsg(data.message || "Phone number updated successfully.");
     } catch { setInfoErr("Server error. Please try again."); }
-    finally { setInfoLoading(false); }
+    finally { setPhoneLoading(false); }
   };
 
   // ── Verify email OTP ──
@@ -78,7 +94,7 @@ export default function ProfileModal({ onClose }) {
     if (!otp) { setOtpErr("Please enter the OTP."); return; }
     setOtpLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/students/verify-email-otp`, {
+      const res = await fetch(`${API_URL}/api/students/change-email`, {
         method: "POST", headers: authHeader,
         body: JSON.stringify({ otp, email: pendingEmail }),
       });
@@ -96,9 +112,9 @@ export default function ProfileModal({ onClose }) {
     setOtpErr("");
     setOtpLoading(true);
     try {
-      const res = await fetch(`${API_URL}/api/students/update-profile`, {
-        method: "PUT", headers: authHeader,
-        body: JSON.stringify({ phone, email: pendingEmail }),
+      const res = await fetch(`${API_URL}/api/students/request-change-email-otp`, {
+        method: "POST", headers: authHeader,
+        body: JSON.stringify({ email: pendingEmail }),
       });
       const data = await res.json();
       if (!res.ok) { setOtpErr(data.error || "Resend failed."); return; }
@@ -116,8 +132,8 @@ export default function ProfileModal({ onClose }) {
     setPwLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/auth/change-password`, {
-        method: "PUT", headers: authHeader,
-        body: JSON.stringify({ oldPassword: oldPw, newPassword: newPw }),
+        method: "PATCH", headers: authHeader,
+        body: JSON.stringify({ oldPassword: oldPw, password: newPw }),
       });
       const data = await res.json();
       if (!res.ok) { setPwErr(data.error || data.message || "Password change failed."); return; }
@@ -225,7 +241,14 @@ export default function ProfileModal({ onClose }) {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</label>
                 {isStudent ? (
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className={inputCls} />
+                  <div className="flex gap-2">
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" className={inputCls} />
+                    {!otpMode && (
+                      <button onClick={handleChangeEmail} disabled={emailLoading} className="shrink-0 bg-green-500 hover:bg-green-600 active:scale-95 disabled:opacity-60 text-white font-semibold px-4 rounded-xl flex items-center justify-center transition-all text-sm">
+                        {emailLoading ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> : "Change"}
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <input type="text" value={user?.email || "—"} readOnly className={readOnlyCls} />
                 )}
@@ -235,7 +258,14 @@ export default function ProfileModal({ onClose }) {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Phone</label>
                 {isStudent ? (
-                  <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+966 5XX XXX XXX" className={inputCls} />
+                  <div className="flex gap-2">
+                    <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+966 5XX XXX XXX" className={inputCls} />
+                    {!otpMode && (
+                      <button onClick={handleChangePhone} disabled={phoneLoading} className="shrink-0 bg-green-500 hover:bg-green-600 active:scale-95 disabled:opacity-60 text-white font-semibold px-4 rounded-xl flex items-center justify-center transition-all text-sm">
+                        {phoneLoading ? <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> : "Change"}
+                      </button>
+                    )}
+                  </div>
                 ) : (
                   <input type="text" value={user?.phone || "—"} readOnly className={readOnlyCls} />
                 )}
@@ -275,12 +305,7 @@ export default function ProfileModal({ onClose }) {
                 </div>
               )}
 
-              {/* Update Info Button (student only) */}
-              {isStudent && !otpMode && (
-                <button onClick={handleUpdateInfo} disabled={infoLoading} className="w-full bg-green-500 hover:bg-green-600 active:scale-95 disabled:opacity-60 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 transition-all text-sm mt-1">
-                  {infoLoading ? <><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>Updating…</> : "Update Information"}
-                </button>
-              )}
+              {/* Update buttons are now inline with their respective inputs */}
             </div>
 
             {/* ── RIGHT: Change Password ── */}
