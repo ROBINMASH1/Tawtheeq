@@ -5,7 +5,6 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./config/swagger.json");
 const basicAuth = require("express-basic-auth");
 const path = require("path");
-const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
@@ -25,8 +24,6 @@ app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }));
-
-app.use(mongoSanitize());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
