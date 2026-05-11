@@ -9,21 +9,25 @@ require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
+//security middlewares
 app.use(helmet());
 
-const rateLimit = require("express-rate-limit");
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 150,
 }));
 
-
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true,
 }));
+
+app.use(mongoSanitize());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -48,9 +52,15 @@ app.use("/api/audit-logs", require("./routes/auditLogs.routes"));
 const distPath = path.join(__dirname, "../../client-frontend/dist");
 app.use(express.static(distPath));
 
-// For any other route, serve the index.html (SPA support)
+// For any other route
 app.use((req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
+});
+
+//Global error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(err.status || 500).json({ message: err.message || "Unknown Error" });
 });
 
 async function startServer() {
