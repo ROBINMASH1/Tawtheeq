@@ -5,13 +5,13 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerDocument = require("./config/swagger.json");
 const basicAuth = require("express-basic-auth");
 const path = require("path");
+const mongoSanitize = require("express-mongo-sanitize");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const mongoSanitize = require("express-mongo-sanitize");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
 
 //security middlewares
 app.use(helmet());
@@ -52,7 +52,7 @@ app.use("/api/audit-logs", require("./routes/auditLogs.routes"));
 const distPath = path.join(__dirname, "../../client-frontend/dist");
 app.use(express.static(distPath));
 
-// For any other route
+// Handler for any other route
 app.use((req, res) => {
   res.sendFile(path.join(distPath, "index.html"));
 });
