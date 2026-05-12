@@ -116,7 +116,7 @@ export default function ForgotPassword() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src="badge.png" alt="Tawtheeq Logo" />
+            <img src="badge.png" alt="Tawtheeq Logo" style={{width: "5rem", height: "5rem"}} />
             <span className="font-semibold text-2xl">
               <span className="text-gray-900 dark:text-white">Taw</span>
               <span className="text-green-500">theeq</span>
