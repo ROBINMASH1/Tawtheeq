@@ -57,7 +57,7 @@ app.use((req, res) => {
 //Global error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(err.status || 500).json({ message: err.message || "Unknown Error" });
+  res.status(err.status || 500).json({ message: "Something went wrong" });
 });
 
 async function startServer() {
