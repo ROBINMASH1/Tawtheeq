@@ -7,6 +7,10 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -18,13 +22,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get the last time this workflow ran successfully
           LAST_RUN=$(gh run list \
             --workflow="deploy.yml" \
             --status=success \
-            --limit=1 \
+            --limit=2 \
             --json updatedAt \
-            --jq '.[0].updatedAt // empty')
+            --jq '.[1].updatedAt // empty')
 
           if [ -z "$LAST_RUN" ]; then
             echo "First run ever. Deploying."
