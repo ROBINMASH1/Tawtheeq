@@ -34,7 +34,7 @@ export default function Verify() {
         setResult(data.certificate);
       }
     } catch {
-      setError('Server error. Please try again.');
+      setError('Blockchain services are temprory disabled. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -160,8 +160,8 @@ export default function Verify() {
                 <div>
                   <p className="text-base font-extrabold text-gray-900 dark:text-white">Certificate Status</p>
                   <span className={`inline-block mt-1 px-3 py-0.5 rounded-full text-xs font-bold ${isVerified
-                      ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
-                      : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
+                    ? 'bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400'
+                    : 'bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400'
                     }`}>
                     {isVerified ? 'Valid' : result.status ?? 'Unknown'}
                   </span>
@@ -192,8 +192,8 @@ export default function Verify() {
 
               {/* Blockchain verified footer */}
               <div className={`flex items-start gap-3 rounded-xl px-5 py-4 ${isVerified
-                  ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
-                  : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800'
+                : 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
                 }`}>
                 <svg className={`w-5 h-5 mt-0.5 shrink-0 ${isVerified ? 'text-green-500' : 'text-red-500'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
