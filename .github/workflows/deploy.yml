@@ -1,43 +1,47 @@
 name: Scheduled Deploy
-
 on:
   schedule:
-    - cron: "0 */6 * * *"   # every 6 hours
-  workflow_dispatch:        # allow manual trigger
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Get current commit
-        id: current
-        run: echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-
-      - name: Restore last deployed commit
-        id: cache
-        uses: actions/cache@v4
         with:
-          path: last_commit.txt
-          key: ${{ steps.current.outputs.hash }}
+          fetch-depth: 0
 
-      - name: Check if new commit
+      - name: Check for new commits since last run
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ -f last_commit.txt ]; then
-            LAST=$(cat last_commit.txt)
-            if [ "$LAST" = "${{ steps.current.outputs.hash }}" ]; then
-              echo "No new commit. Skipping deploy."
-              exit 0
+          # Get the last time this workflow ran successfully
+          LAST_RUN=$(gh run list \
+            --workflow="deploy.yml" \
+            --status=success \
+            --limit=1 \
+            --json updatedAt \
+            --jq '.[0].updatedAt // empty')
+
+          if [ -z "$LAST_RUN" ]; then
+            echo "First run ever. Deploying."
+            echo "skip=false" >> $GITHUB_OUTPUT
+          else
+            COMMITS=$(git log --oneline --after="$LAST_RUN")
+            if [ -z "$COMMITS" ]; then
+              echo "No new commits since last run. Skipping."
+              echo "skip=true" >> $GITHUB_OUTPUT
+            else
+              echo "New commits found. Deploying."
+              echo "skip=false" >> $GITHUB_OUTPUT
             fi
           fi
 
-      - name: Save new commit
-        run: echo "${{ steps.current.outputs.hash }}" > last_commit.txt
-
       - name: Trigger DigitalOcean redeploy
+        if: steps.check.outputs.skip == 'false'
         run: |
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.DO_API_TOKEN }}" \
