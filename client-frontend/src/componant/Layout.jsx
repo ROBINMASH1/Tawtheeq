@@ -16,6 +16,11 @@ import ProfileSetup from '../pages/profile-setup';
 import ManageAdmins from '../pages/manage-admins';
 import StaffManagement from '../pages/staff-management';
 import NotFound from '../pages/NotFound';
+import AboutTawtheeq from '../pages/company/AboutTawtheeq';
+import HowItWorks from '../pages/company/HowItWorks';
+import BlockchainTechnology from '../pages/company/BlockchainTechnology';
+import FAQ from '../pages/company/FAQ';
+import ContactUs from '../pages/company/ContactUs';
 
 export default function Layout() {
   const location = useLocation();
@@ -31,6 +36,11 @@ export default function Layout() {
           <Route path="/" element={<Home />} />
           <Route path="/verify" element={<Verify />} />
           <Route path="/verify/:certificateId" element={<Verify />} />
+          <Route path="/about" element={<AboutTawtheeq />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/blockchain" element={<BlockchainTechnology />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<ContactUs />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
