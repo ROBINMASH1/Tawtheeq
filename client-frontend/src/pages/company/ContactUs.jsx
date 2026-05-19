@@ -15,8 +15,8 @@ export default function ContactUs() {
   const contacts = [
     {
       name: "Robin Almashhrawi",
-      role: "Co-Founder & Software Engineer",
-      email: "Robin@gmail.com",
+      role: "Founder & Software Engineer",
+      email: "xi2f@hotmail.com",
       phone: "+962787748666",
       avatar: "R",
       color: "from-blue-400 to-blue-600",
@@ -127,7 +127,7 @@ export default function ContactUs() {
                     type="text"
                     required
                     value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 dark:text-white transition-all"
                     placeholder="John Doe"
                   />
@@ -139,7 +139,7 @@ export default function ContactUs() {
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 dark:text-white transition-all"
                     placeholder="john@example.com"
                   />
@@ -151,7 +151,7 @@ export default function ContactUs() {
                     required
                     rows={4}
                     value={formData.message}
-                    onChange={(e) => setFormData({...formData, message: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 dark:text-white transition-all resize-none"
                     placeholder="How can we help you?"
                   />
@@ -159,11 +159,10 @@ export default function ContactUs() {
 
                 <button
                   type="submit"
-                  className={`mt-2 w-full py-4 rounded-xl font-bold text-white transition-all shadow-lg ${
-                    submitted
+                  className={`mt-2 w-full py-4 rounded-xl font-bold text-white transition-all shadow-lg ${submitted
                       ? 'bg-blue-500 hover:bg-blue-600 shadow-blue-500/25'
                       : 'bg-green-600 hover:bg-green-700 shadow-green-500/25 hover:-translate-y-0.5'
-                  }`}
+                    }`}
                 >
                   {submitted ? 'Message Sent! ✨' : 'Send Message'}
                 </button>
