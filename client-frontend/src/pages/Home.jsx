@@ -111,7 +111,7 @@ const steps = [
 /* ──────────────────────────── Feature Bullets ───────────────────────── */
 const featureBullets = [
   { icon: '🔐', text: 'SHA-256 cryptographic hashing on every credential' },
-  { icon: '🌐', text: 'Distributed across thousands of nodes worldwide' },
+  { icon: '🌐', text: 'Distributed across university nodes jordanwide' },
   { icon: '📜', text: 'Permanent audit trail for every issued certificate' },
 ];
 

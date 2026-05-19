@@ -39,7 +39,7 @@ export default function BlockchainTechnology() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { icon: '🔒', title: 'Immutability', desc: 'Once a credential is cryptographically signed and hashed on the blockchain, it cannot be altered, tampered with, or deleted. It serves as a permanent source of truth.' },
-              { icon: '🌐', title: 'Decentralization', desc: 'No single point of failure. By distributing data across thousands of nodes worldwide, we eliminate the risk of centralized servers being hacked or going offline.' },
+              { icon: '🌐', title: 'Decentralization', desc: 'No single point of failure. By distributing data across university nodes jordanwide, we eliminate the risk of centralized servers being hacked or going offline.' },
               { icon: '⚡', title: 'Instant Validation', desc: "Verifiers don't need to call universities or wait weeks for background checks. The blockchain provides mathematical proof of authenticity in a fraction of a second." }
             ].map((feature, i) => (
               <ScrollReveal key={i} direction={i === 0 ? 'left' : i === 2 ? 'right' : 'bottom'} delay={i * 0.15}>
