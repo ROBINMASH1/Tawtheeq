@@ -216,7 +216,10 @@ export default function Verify() {
 
         {/* How Verification Works — hidden once a result is shown */}
         {!result && (
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-sm transition-colors duration-300">
+          <div 
+            className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-sm transition-colors duration-300 opacity-0"
+            style={{ animation: 'fadeSlideIn 0.5s ease forwards' }}
+          >
             <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
               How Verification Works
             </h2>
@@ -227,7 +230,11 @@ export default function Verify() {
                 { title: 'Status Check:', desc: 'The system checks if the certificate is valid or revoked.' },
                 { title: 'Results Display:', desc: 'All certificate details are displayed including student information and academic credentials.' },
               ].map((step, i) => (
-                <li key={i} className="flex gap-4">
+                <li 
+                  key={i} 
+                  className="flex gap-4 opacity-0"
+                  style={{ animation: `fadeSlideIn 0.5s ease forwards ${i * 0.15}s` }}
+                >
                   <span className="text-sm font-bold text-gray-700 dark:text-gray-300 w-5 shrink-0">{i + 1}.</span>
                   <div>
                     <span className="text-sm font-bold text-gray-800 dark:text-gray-200">{step.title}</span>
