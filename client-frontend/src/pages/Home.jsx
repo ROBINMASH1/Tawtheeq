@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ScrollReveal from '../componant/ScrollReveal';
+import auditIcon from '../assets/audit.png';
+import padlockIcon from '../assets/padlock.png';
 
 /* ──────────────────────────── Stat Counter ──────────────────────────── */
 const stats = [
   { value: '50K+', label: 'Credentials Issued' },
   { value: '120+', label: 'Institutions' },
   { value: '99.9%', label: 'Uptime' },
-  { value: '<2s',  label: 'Verification Time' },
+  { value: '<2s', label: 'Verification Time' },
 ];
 
 /* ──────────────────────────── Blockchain Cards Data ──────────────────── */
@@ -15,7 +17,7 @@ const blockchainCards = [
   {
     icon: (
       <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
       </svg>
     ),
     color: 'from-blue-500 to-cyan-400',
@@ -26,8 +28,8 @@ const blockchainCards = [
   {
     icon: (
       <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>
+        <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" />
+        <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
       </svg>
     ),
     color: 'from-purple-500 to-pink-400',
@@ -38,7 +40,7 @@ const blockchainCards = [
   {
     icon: (
       <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
       </svg>
     ),
     color: 'from-green-500 to-emerald-400',
@@ -53,7 +55,7 @@ const whyCards = [
   {
     icon: (
       <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0110 0v4" />
       </svg>
     ),
     gradient: 'from-green-400 to-emerald-600',
@@ -63,8 +65,8 @@ const whyCards = [
   {
     icon: (
       <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/>
-        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>
+        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
       </svg>
     ),
     gradient: 'from-blue-400 to-indigo-600',
@@ -74,7 +76,7 @@ const whyCards = [
   {
     icon: (
       <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        <path d="M22 11.08V12a10 10 0 11-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
       </svg>
     ),
     gradient: 'from-cyan-400 to-teal-600',
@@ -110,9 +112,9 @@ const steps = [
 
 /* ──────────────────────────── Feature Bullets ───────────────────────── */
 const featureBullets = [
-  { icon: '🔐', text: 'SHA-256 cryptographic hashing on every credential' },
+  { icon: <img src={padlockIcon} alt="Security Hash" className="w-5 h-5 object-contain" />, text: 'SHA-256 cryptographic hashing on every credential' },
   { icon: '🌐', text: 'Distributed across university nodes jordanwide' },
-  { icon: '📜', text: 'Permanent audit trail for every issued certificate' },
+  { icon: <img src={auditIcon} alt="Audit Trail" className="w-5 h-5 object-contain" />, text: 'Permanent audit trail for every issued certificate' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -190,7 +192,7 @@ export default function Home() {
               className="group relative flex items-center text-lg gap-2 bg-gradient-to-r from-green-600 to-emerald-500 hover:from-green-500 hover:to-emerald-400 text-white font-semibold px-7 py-3.5 rounded-2xl transition-all duration-300 shadow-lg shadow-green-500/25 hover:shadow-green-500/40 hover:-translate-y-0.5"
             >
               Get Started
-              <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
             <Link
               to="/verify"
@@ -251,10 +253,10 @@ export default function Home() {
                 <div className="w-72 h-72 bg-gradient-to-br from-green-100 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 rounded-3xl flex items-center justify-center shadow-2xl shadow-green-500/10 border border-green-200/50 dark:border-green-800/30">
                   <svg className="w-36 h-36 text-green-500 dark:text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
                     style={{ animation: 'float 4s ease-in-out infinite' }}>
-                    <rect x="2" y="7" width="20" height="14" rx="2"/>
-                    <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/>
-                    <line x1="12" y1="12" x2="12" y2="16"/>
-                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
+                    <rect x="2" y="7" width="20" height="14" rx="2" />
+                    <path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
+                    <line x1="12" y1="12" x2="12" y2="16" />
+                    <circle cx="12" cy="12" r="1" fill="currentColor" />
                   </svg>
                 </div>
                 {/* Floating badges */}
@@ -285,7 +287,7 @@ export default function Home() {
                 {featureBullets.map((item, i) => (
                   <ScrollReveal key={i} delay={i * 0.12} y={20} duration={0.5}>
                     <div className="flex items-center gap-3 bg-white dark:bg-gray-800/80 rounded-xl px-5 py-3.5 shadow-sm border border-gray-100 dark:border-gray-700/50 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                      <span className="text-xl">{item.icon}</span>
+                      <span className="flex items-center justify-center shrink-0 w-6 h-6">{item.icon}</span>
                       <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{item.text}</span>
                     </div>
                   </ScrollReveal>
@@ -424,7 +426,7 @@ export default function Home() {
                 className="group flex items-center gap-2 bg-white text-green-700 font-bold text-lg px-8 py-4 rounded-2xl hover:bg-green-50 transition-all duration-300 shadow-xl shadow-black/10 hover:-translate-y-0.5"
               >
                 Get Started Now
-                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                <svg className="w-5 h-5 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
               </Link>
               <Link
                 to="/verify"
