@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ScrollReveal from '../componant/ScrollReveal';
-import auditIcon from '../assets/audit.png';
-import padlockIcon from '../assets/padlock.png';
-
 /* ──────────────────────────── Stat Counter ──────────────────────────── */
 const stats = [
   { value: '50K+', label: 'Credentials Issued' },
@@ -112,9 +109,9 @@ const steps = [
 
 /* ──────────────────────────── Feature Bullets ───────────────────────── */
 const featureBullets = [
-  { icon: <img src={padlockIcon} alt="Security Hash" className="w-5 h-5 object-contain" />, text: 'SHA-256 cryptographic hashing on every credential' },
+  { icon: <img src="/padlock.png" alt="Security Hash" className="w-5 h-5 object-contain" />, text: 'SHA-256 cryptographic hashing on every credential' },
   { icon: '🌐', text: 'Distributed across university nodes jordanwide' },
-  { icon: <img src={auditIcon} alt="Audit Trail" className="w-5 h-5 object-contain" />, text: 'Permanent audit trail for every issued certificate' },
+  { icon: <img src="/audit.png" alt="Audit Trail" className="w-5 h-5 object-contain" />, text: 'Permanent audit trail for every issued certificate' },
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════
