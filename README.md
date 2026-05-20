@@ -11,10 +11,12 @@ The primary goal of Tawtheeq is to prevent credential fraud, streamline the cert
 - **Students**: Secure access to their academic credentials, tracking, and easy sharing of verified certificates.
 
 ## 🚀 Technology Stack
-A full-stack application built using the MERN stack:
+A full-stack application built using the MERN stack with enterprise blockchain integration:
+- **Blockchain**: Hyperledger Fabric (Chaincode written in Node.js, deployed on Kaleido)
 - **Frontend**: React (Vite), TailwindCSS
 - **Backend**: Node.js (Express)
 - **Database**: MongoDB (Mongoose)
+- **Decentralized Storage**: IPFS (InterPlanetary File System)
 
 ## 📝 Key Features
 - **Role-Based Dashboards**: Tailored interfaces for MOHE, University Admins, Staff, and Students.
