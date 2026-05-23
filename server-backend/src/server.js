@@ -51,7 +51,7 @@ app.use(express.static(distPath));
 
 // Handler for any other route
 app.use((req, res) => {
-  res.sendFile(path.join(distPath, "index.html"));
+  res.sendFile(path.join(distPath, "NotFound.jsx"));
 });
 
 //Global error handling middleware
