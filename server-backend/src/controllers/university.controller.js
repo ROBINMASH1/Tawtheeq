@@ -12,13 +12,7 @@ const createUniversity = async (req, res) => {
   try {
     const { name, licenseNumber, address, contactEmail, Initialism } = req.body;
 
-    if (!name || !licenseNumber || !contactEmail || !Initialism) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "All required fields (name, licenseNumber, contactEmail, Initialism) must be provided.",
-      });
-    }
+
 
     const requesterUser = await User.findOne({ _id: req.user._id }).lean();
 
