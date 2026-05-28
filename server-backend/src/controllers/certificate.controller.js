@@ -21,9 +21,7 @@ exports.issueCertificate = async (req, res) => {
       return res.status(400).json({ error: "PDF certificate file is required" });
     }
 
-    if (!studentId || !studentPersonalId || !degree || !major || !gpa || !graduationDate) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
+
 
     const universityId = req.universityScope;
 
@@ -132,9 +130,7 @@ exports.revokeCertificate = async (req, res) => {
     const { certificateId } = req.params;
     const { reason } = req.body;
 
-    if (!reason) {
-      return res.status(400).json({ error: "Revocation reason is required" });
-    }
+
 
     const cert = await Certificate.findOne({ certificateId });
     if (!cert) return res.status(404).json({ error: "Certificate not found" });

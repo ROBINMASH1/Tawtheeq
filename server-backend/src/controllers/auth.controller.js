@@ -12,11 +12,6 @@ const login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
 
-    if (!identifier || !password) {
-      return res
-        .status(400)
-        .json({ error: "Identifier and password are required" });
-    }
     const user = await User.findOne({ identifier });
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
@@ -71,9 +66,6 @@ const changePassword = async (req, res) => {
     const { password, oldPassword } = req.body;
     const userId = req.user._id;
 
-    if (!password || !oldPassword) {
-      return res.status(400).json({ error: "New password and old password are required" });
-    }
 
     const user = await User.findById(userId);
     if (!user) {

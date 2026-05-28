@@ -12,12 +12,7 @@ const createUniStaff = async (req, res) => {
   try {
     const { staffName, staffIdentifier } = req.body;
 
-    if (!staffName || !staffIdentifier) {
-      return res.status(400).json({
-        success: false,
-        message: "staffName and staffIdentifier are required.",
-      });
-    }
+
 
     //caller must be a Uniadmin
     const callerProfile = req.user.profile;

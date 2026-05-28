@@ -19,11 +19,6 @@ const createStudent = async (req, res) => {
   try {
     const { personalId, name } = req.body;
 
-    if (!personalId || !name) {
-      return res
-        .status(400)
-        .json({ error: "Personal ID and name are required" });
-    }
 
     const trimmedId = String(personalId).trim();
     const trimmedName = String(name).trim();
@@ -79,9 +74,6 @@ const requestActivationOTP = async (req, res) => {
   try {
     const { identifier, email, phone } = req.body;
 
-    if (!identifier || !email || !phone) {
-      return res.status(400).json({ error: "All fields are required" });
-    }
 
     const user = await User.findOne({ identifier });
     if (!user) {
@@ -145,9 +137,6 @@ const sendOTPForgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
 
     const studentProfile = await Student.findOne({ email });
     if (!studentProfile) {
@@ -249,18 +238,6 @@ const verifyOTP = async (req, res) => {
   try {
     const { identifier, otp, email, phone, newPassword } = req.body;
 
-    if (!identifier || !otp || !email || !phone || !newPassword) {
-      return res.status(400).json({
-        error:
-          "Identifier, OTP, email, phone, and newPassword are all required",
-      });
-    }
-
-    if (newPassword.length < 8) {
-      return res
-        .status(400)
-        .json({ error: "Password must be at least 8 characters" });
-    }
 
     const user = await User.findOne({ identifier });
     if (!user) {
@@ -299,17 +276,6 @@ const verifyOTPForgotPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
 
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({
-        error: "Email, OTP, and newPassword are all required",
-      });
-    }
-
-    if (newPassword.length < 8) {
-      return res
-        .status(400)
-        .json({ error: "Password must be at least 8 characters" });
-    }
 
     const studentProfile = await Student.findOne({ email });
     if (!studentProfile) {
@@ -340,9 +306,6 @@ const requestChangeEmailOTP = async (req, res) => {
     const { email } = req.body;
     const userId = req.user._id;
 
-    if (!email) {
-      return res.status(400).json({ error: "New email is required" });
-    }
 
     const user = await User.findById(userId);
     if (!user) {
@@ -379,9 +342,6 @@ const changeEmail = async (req, res) => {
     const { email, otp } = req.body;
     const userId = req.user._id;
 
-    if (!email || !otp) {
-      return res.status(400).json({ error: "New email and OTP are required" });
-    }
 
     const user = await User.findById(userId);
     if (!user) {
@@ -425,9 +385,6 @@ const changePhoneNumber = async (req, res) => {
     const { phone } = req.body;
     const userId = req.user._id;
 
-    if (!phone) {
-      return res.status(400).json({ error: "Phone number is required" });
-    }
 
     const user = await User.findById(userId);
     if (!user) {
