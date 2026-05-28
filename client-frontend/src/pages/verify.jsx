@@ -13,8 +13,18 @@ export default function Verify() {
 
   const handleVerify = async (idToVerify = certId) => {
     // If called from a button click, `idToVerify` might be an event object.
-    const id = (typeof idToVerify === 'string' ? idToVerify : certId).trim();
+    let id = (typeof idToVerify === 'string' ? idToVerify : certId).trim();
     if (!id) { setError('Please enter a Certificate ID.'); return; }
+
+    // Normalize to uppercase
+    id = id.toUpperCase();
+
+    // Validate Certificate ID format: TAWQ-[UNI/ORG (3-8 chars)]-[YEAR (4 digits)]-[RANDOM-ID (4-6 chars)]
+    const certIdRegex = /^TAWQ-[A-Z0-9]{2,5}-\d{2,5}-[A-Z0-9]{4,6}$/;
+    if (!certIdRegex.test(id)) {
+      setError('Invalid Certificate ID format. E.g., TAWQ-69F-2026-N8N6EN');
+      return;
+    }
 
     setError('');
     setResult(null);
@@ -216,7 +226,7 @@ export default function Verify() {
 
         {/* How Verification Works — hidden once a result is shown */}
         {!result && (
-          <div 
+          <div
             className="bg-gray-200 dark:bg-gray-800 rounded-2xl p-4 sm:p-8 shadow-sm transition-colors duration-300 opacity-0"
             style={{ animation: 'fadeSlideIn 0.5s ease forwards' }}
           >
@@ -230,8 +240,8 @@ export default function Verify() {
                 { title: 'Status Check:', desc: 'The system checks if the certificate is valid or revoked.' },
                 { title: 'Results Display:', desc: 'All certificate details are displayed including student information and academic credentials.' },
               ].map((step, i) => (
-                <li 
-                  key={i} 
+                <li
+                  key={i}
                   className="flex gap-4 opacity-0"
                   style={{ animation: `fadeSlideIn 0.5s ease forwards ${i * 0.15}s` }}
                 >
