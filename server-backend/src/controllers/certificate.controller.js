@@ -7,7 +7,7 @@ const moheService = require('../services/mohe.service');
 const qrService = require('../services/qr.service');
 const ipfsService = require('../services/ipfs.service');
 const blockchainService = require('../services/blockchain.service');
-const certService = require('../services/certificate.service');
+const certService = require('../helpers/certificate.helpers');
 
 // POST /issue
 exports.issueCertificate = async (req, res) => {

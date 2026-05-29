@@ -6,7 +6,7 @@ const AuditLog = require('../models/auditLogs.model');
 const qrService = require('./qr.service');
 const ipfsService = require('./ipfs.service');
 const blockchainService = require('./blockchain.service');
-const certService = require('./certificate.service');
+const certService = require('../helpers/certificate.helpers');
 
 // Parse CSV buffer → array of row objects
 exports.parseCSV = (csvBuffer) => {
