@@ -573,10 +573,11 @@ export default function StaffDashboard() {
 
       {/* ── CERTIFICATE DETAIL MODAL ── */}
       {selectedCert && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4" onClick={() => setSelectedCert(null)}>
           <div
             className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl p-6 flex flex-col gap-5"
             style={{ animation: "fadeSlideIn 0.3s ease forwards" }}
+            onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
