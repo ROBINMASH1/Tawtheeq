@@ -45,39 +45,92 @@ function Toast({ toast, onClick }) {
   );
 }
 
-// ── Detail Box (after clicking toast) ────────────────────────────────────────
+// ── Detail Box (result after certificate issuance) ───────────────────────────
 function DetailBox({ data, onClose }) {
   if (!data) return null;
+  const isSuccess = data.success !== false;
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl w-full max-w-md shadow-2xl p-6 flex flex-col gap-4"
-        style={{ animation: "fadeSlideIn 0.3s ease forwards" }}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-              <polyline points="9 12 11 14 15 10" />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-base font-extrabold text-gray-900 dark:text-white">Certificate Issued</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Blockchain record confirmed</p>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2">
-          {[
-            { label: "Certificate ID", value: data.certificateId },
-            { label: "Transaction Hash", value: data.txHash },
-            { label: "IPFS Hash", value: data.ipfsHash },
-          ].map(({ label, value }) => (
-            <div key={label} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
-              <p className="text-xs text-gray-400 dark:text-gray-500">{label}</p>
-              <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 break-all">{value || "—"}</p>
+    <div
+      className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl w-full max-w-md shadow-2xl p-6 flex flex-col gap-4"
+        style={{ animation: "fadeSlideIn 0.3s ease forwards" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+              isSuccess
+                ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                : "bg-red-100 dark:bg-red-900/30 text-red-500 dark:text-red-400"
+            }`}>
+              {isSuccess ? (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="12" />
+                  <line x1="12" y1="16" x2="12.01" y2="16" />
+                </svg>
+              )}
             </div>
-          ))}
+            <div>
+              <h3 className="text-base font-extrabold text-gray-900 dark:text-white">
+                {isSuccess ? "Certificate Issued" : "Issuance Failed"}
+              </h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {isSuccess ? "Blockchain record confirmed" : "The certificate could not be issued"}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center justify-center transition-colors"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
         </div>
-        <button onClick={onClose} className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-xl transition-colors">
+
+        {/* Detail fields — success only */}
+        {isSuccess && (
+          <div className="flex flex-col gap-2">
+            {[
+              { label: "Certificate ID", value: data.certificateId },
+              { label: "Transaction Hash", value: data.txHash },
+              { label: "IPFS Hash", value: data.ipfsHash },
+            ].map(({ label, value }) => (
+              <div key={label} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3">
+                <p className="text-xs text-gray-400 dark:text-gray-500">{label}</p>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mt-0.5 break-all">{value || "—"}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Error message — failure only */}
+        {!isSuccess && data.message && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-3">
+            <p className="text-sm text-red-600 dark:text-red-400 break-words">{data.message}</p>
+          </div>
+        )}
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className={`w-full font-semibold py-3 rounded-xl active:scale-95 transition-all text-white ${
+            isSuccess ? "bg-green-500 hover:bg-green-600" : "bg-red-500 hover:bg-red-600"
+          }`}
+        >
           Close
         </button>
       </div>
@@ -200,16 +253,21 @@ export default function IssueCertificateModal({ onClose }) {
       }
 
       if (!res.ok) {
-        setSingleError(data.error || data.message || "Failed to issue certificate.");
+        const errMsg = data.error || data.message || "Failed to issue certificate.";
+        setSingleError(errMsg);
+        setDetailData({ success: false, message: errMsg });
         showToast(false);
         return;
       }
+      setDetailData(data);
       showToast(true, data);
       setSingleForm({ studentId: "", studentPersonalId: "", degree: "", major: "", gpa: "", graduationDate: "" });
       setPdfFile(null);
     } catch (err) {
       console.error("Single Issuance Error:", err);
-      setSingleError(err.message || "Server error. Please try again.");
+      const errMsg = err.message || "Server error. Please try again.";
+      setSingleError(errMsg);
+      setDetailData({ success: false, message: errMsg });
       showToast(false);
     } finally {
       setSingleLoading(false);
