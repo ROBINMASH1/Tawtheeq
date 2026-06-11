@@ -4,7 +4,7 @@ const User = require("../models/users.model");
 const UniUser = require("../models/uniUsers.model");
 const AuditLog = require("../models/auditLogs.model");
 const Certificate = require("../models/certificates.model");
-const { generateTempPassword, generateOrgId, } = require("../utils/university.helpers");
+const { generateTempPassword, generateOrgId, } = require("../helpers/university.helpers");
 
 const createUniversity = async (req, res) => {
   const created = { university: null, uniUser: null, adminUser: null, auditLog: null, };

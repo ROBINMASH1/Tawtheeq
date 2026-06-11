@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const User = require("../models/users.model");
 const UniUser = require("../models/uniUsers.model");
 const AuditLog = require("../models/auditLogs.model");
-const { generateTempPassword } = require("../utils/university.helpers");
+const { generateTempPassword } = require("../helpers/university.helpers");
 
 // Uniadmin creates a UniStaff account for their university
 const createUniStaff = async (req, res) => {

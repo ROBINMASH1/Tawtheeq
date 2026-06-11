@@ -5,7 +5,7 @@ const OTP = require("../models/otps.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const Certificate = require("../models/certificates.model");
-const { createToken, sendOTPEmail } = require("../utils/auth.helpers");
+const { createToken, sendOTPEmail } = require("../helpers/auth.helpers");
 
 const generateTempPassword = (length = 8) => {
   return crypto

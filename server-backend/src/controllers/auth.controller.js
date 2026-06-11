@@ -1,6 +1,6 @@
 const User = require("../models/users.model");
 const bcrypt = require("bcrypt");
-const { createToken } = require("../utils/auth.helpers");
+const { createToken } = require("../helpers/auth.helpers");
 
 /**
  * Works for all roles (Student, uniUser, MOHEAdmin).
