@@ -25,3 +25,62 @@ A full-stack application built using the MERN stack with enterprise blockchain i
 - **Audit Logs**: Comprehensive tracking of all administrative actions for transparency.
 - **Secure Authentication**: OTP-based password recovery, robust session management.
 - **Responsive UI/UX**: Modern, accessible, and fast interface with dark/light mode support.
+
+## 🛠️ Getting Started
+
+### Prerequisites
+- [Node.js](https://nodejs.org/) v18+
+- [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) account (or local MongoDB)
+- [Kaleido](https://www.kaleido.io/) account for Hyperledger Fabric & IPFS (optional for local dev)
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/ROBINMASH1/Tawtheeq.git
+cd Tawtheeq
+```
+
+### 2. Configure Environment Variables
+
+**Backend:**
+```bash
+cp server-backend/.env.example server-backend/.env
+# Edit server-backend/.env and fill in all required values
+```
+
+**Frontend:**
+```bash
+cp client-frontend/.env.example client-frontend/.env
+# Edit client-frontend/.env and set VITE_API_URL to your backend URL
+```
+
+### 3. Install Dependencies
+```bash
+npm run install:backend
+npm run install:frontend
+```
+
+### 4. Seed the Database (Optional)
+Populates the database with demo users and a sample certificate:
+```bash
+npm run seed
+```
+> ⚠️ This will clear all existing data. Demo credentials are printed to console after seeding.
+
+### 5. Run Locally
+
+**Backend** (runs on `http://localhost:5000`):
+```bash
+npm run dev:backend
+```
+
+**Frontend** (runs on `http://localhost:5173`):
+```bash
+npm run dev:frontend
+```
+
+### 6. API Documentation
+Once the backend is running, visit `http://localhost:5000/api-docs` for the Swagger UI.
+> Access requires the `SWAGGER_USER` / `SWAGGER_PASSWORD` credentials from your `.env`.
+
+## 📄 License
+This project is licensed under the [MIT License](LICENSE).
