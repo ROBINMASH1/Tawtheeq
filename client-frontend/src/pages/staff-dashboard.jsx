@@ -211,9 +211,7 @@ export default function StaffDashboard() {
               Create Student Account
             </button>
 
-          </div>
-
-          {/* Profile */}
+            {/* Profile */}
             <button
               onClick={() => setShowProfile(true)}
               className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 active:scale-95 text-gray-700 dark:text-gray-300 text-sm font-semibold px-4 py-2.5 rounded-xl transition-all shadow-sm"
@@ -222,6 +220,7 @@ export default function StaffDashboard() {
               Profile
             </button>
 
+          </div>
         </div>
 
         {/* Recent Issuances */}
