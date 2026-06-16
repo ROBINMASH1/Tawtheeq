@@ -18,6 +18,7 @@ app.use(helmet());
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
+  skip: (req, res) => req.originalUrl.startsWith('/api/certificates/bulk/job/'),
 }));
 
 app.use(cors({
