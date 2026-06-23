@@ -125,6 +125,119 @@ export default function StaffManagement() {
     setTimeout(() => setCopiedAll(false), 2000);
   };
 
+  const handlePrint = (data) => {
+    const rows = [
+      { label: "Staff Name",        value: data.staffCredentials?.name ?? data.staffCredentials?.staffName },
+      { label: "Identifier",        value: data.staffCredentials?.identifier },
+      { label: "Temporary Password", value: data.staffCredentials?.tempPassword },
+    ];
+    const tableRows = rows
+      .map(
+        ({ label, value }) =>
+          `<tr><td style="padding:10px 14px;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;white-space:nowrap">${label}</td><td style="padding:10px 14px;font-family:monospace;color:#111827;border-bottom:1px solid #e5e7eb;word-break:break-all">${value ?? "\u2014"}</td></tr>`
+      )
+      .join("");
+    const win = window.open("", "_blank", "width=620,height=480");
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Staff Credentials \u2014 ${data.staffCredentials?.identifier ?? ""}</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9fafb; display: flex; justify-content: center; padding: 40px 20px; }
+          .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px; max-width: 540px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+          .header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; }
+          .icon { width: 44px; height: 44px; border-radius: 12px; background: #dcfce7; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+          .icon svg { width: 22px; height: 22px; stroke: #16a34a; }
+          h1 { font-size: 18px; font-weight: 800; color: #111827; }
+          .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
+          table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; }
+          .warning { margin-top: 20px; font-size: 12px; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; }
+          .footer { margin-top: 20px; font-size: 11px; color: #9ca3af; text-align: right; }
+          @media print { body { background: #fff; padding: 0; } .card { box-shadow: none; border: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div>
+              <h1>Staff Member Created</h1>
+              <p class="subtitle">Generated on ${new Date().toLocaleString()}</p>
+            </div>
+          </div>
+          <table>${tableRows}</table>
+          <p class="warning">\u26a0 Keep these credentials safe \u2014 the temporary password will not be shown again.</p>
+          <p class="footer">Tawtheeq \u2014 Staff Management System</p>
+        </div>
+      </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
+  const handleResetPrint = (data) => {
+    const rows = [
+      { label: "Identifier",         value: data.identifier },
+      { label: "Temporary Password",  value: data.tempPassword },
+    ];
+    const tableRows = rows
+      .map(
+        ({ label, value }) =>
+          `<tr><td style="padding:10px 14px;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;white-space:nowrap">${label}</td><td style="padding:10px 14px;font-family:monospace;color:#111827;border-bottom:1px solid #e5e7eb;word-break:break-all">${value ?? "\u2014"}</td></tr>`
+      )
+      .join("");
+    const win = window.open("", "_blank", "width=620,height=420");
+    win.document.write(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Password Reset \u2014 ${data.identifier ?? ""}</title>
+        <style>
+          * { box-sizing: border-box; margin: 0; padding: 0; }
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f9fafb; display: flex; justify-content: center; padding: 40px 20px; }
+          .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px; max-width: 540px; width: 100%; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+          .header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6; }
+          .icon { width: 44px; height: 44px; border-radius: 12px; background: #ffedd5; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+          .icon svg { width: 22px; height: 22px; stroke: #ea580c; }
+          h1 { font-size: 18px; font-weight: 800; color: #111827; }
+          .subtitle { font-size: 12px; color: #6b7280; margin-top: 2px; }
+          table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; }
+          .warning { margin-top: 20px; font-size: 12px; color: #b45309; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 10px 14px; }
+          .footer { margin-top: 20px; font-size: 11px; color: #9ca3af; text-align: right; }
+          @media print { body { background: #fff; padding: 0; } .card { box-shadow: none; border: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="card">
+          <div class="header">
+            <div class="icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+            </div>
+            <div>
+              <h1>Password Reset</h1>
+              <p class="subtitle">Generated on ${new Date().toLocaleString()}</p>
+            </div>
+          </div>
+          <table>${tableRows}</table>
+          <p class="warning">\u26a0 Keep these credentials safe \u2014 the temporary password will not be shown again.</p>
+          <p class="footer">Tawtheeq \u2014 Staff Management System</p>
+        </div>
+      </body>
+      </html>
+    `);
+    win.document.close();
+    win.focus();
+    setTimeout(() => win.print(), 400);
+  };
+
   const filteredStaff = staff
     .filter((s) =>
       s.name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -169,7 +282,7 @@ export default function StaffManagement() {
     </div>
   );
 
-  const ResultPopup = ({ title, subtitle, accentColor, data, error, onClose }) => (
+  const ResultPopup = ({ title, subtitle, accentColor, data, error, onClose, onPrint }) => (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl w-full max-w-md shadow-2xl p-6 flex flex-col gap-5"
         style={{ animation: "fadeSlideIn 0.3s ease forwards" }}>
@@ -212,9 +325,24 @@ export default function StaffManagement() {
         <p className="text-xs text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl px-4 py-3">
           ⚠ Save these credentials — they won't be shown again.
         </p>
-        <button onClick={onClose} className="w-full bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all">
-          Done
-        </button>
+        <div className="flex gap-3">
+          {onPrint && (
+            <button
+              onClick={onPrint}
+              className="flex-1 flex items-center justify-center gap-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold py-3 rounded-xl transition-all"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="6 9 6 2 18 2 18 9"/>
+                <path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/>
+                <rect x="6" y="14" width="12" height="8"/>
+              </svg>
+              Print
+            </button>
+          )}
+          <button onClick={onClose} className="flex-1 bg-gray-800 dark:bg-gray-700 hover:bg-gray-900 dark:hover:bg-gray-600 active:scale-95 text-white font-semibold py-3 rounded-xl transition-all">
+            Done
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -488,6 +616,7 @@ export default function StaffManagement() {
           }}
           error=""
           onClose={() => setCreateResult(null)}
+          onPrint={() => handlePrint(createResult)}
         />
       )}
 
@@ -503,6 +632,7 @@ export default function StaffManagement() {
           }}
           error={resetError}
           onClose={() => { setResetResult(null); setResetError(""); }}
+          onPrint={() => handleResetPrint(resetResult)}
         />
       )}
 
