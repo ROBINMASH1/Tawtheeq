@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useRef, useEffect, useState, useCallback } from 'react';
 import ScrollReveal from '../componant/ScrollReveal';
 /* ──────────────────────────── Stat Counter ──────────────────────────── */
 const stats = [
@@ -115,6 +116,289 @@ const featureBullets = [
 ];
 
 /* ═══════════════════════════════════════════════════════════════════════
+   VIDEO SECTION COMPONENT
+   ═══════════════════════════════════════════════════════════════════════ */
+function VideoSection() {
+  const videoRef = useRef(null);
+  const sectionRef = useRef(null);
+  const progressRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(1);
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  const hideTimer = useRef(null);
+
+  /* ── Auto-play/pause based on scroll visibility ── */
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const vid = videoRef.current;
+        if (!vid) return;
+        if (entry.isIntersecting) {
+          vid.play().then(() => setIsPlaying(true)).catch(() => {});
+        } else {
+          vid.pause();
+          setIsPlaying(false);
+        }
+      },
+      { threshold: 0.4 }
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  /* ── Progress updates ── */
+  useEffect(() => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    const onTimeUpdate = () => {
+      setCurrentTime(vid.currentTime);
+      setProgress(vid.duration ? (vid.currentTime / vid.duration) * 100 : 0);
+    };
+    const onLoaded = () => setDuration(vid.duration);
+    vid.addEventListener('timeupdate', onTimeUpdate);
+    vid.addEventListener('loadedmetadata', onLoaded);
+    return () => {
+      vid.removeEventListener('timeupdate', onTimeUpdate);
+      vid.removeEventListener('loadedmetadata', onLoaded);
+    };
+  }, []);
+
+  /* ── Controls auto-hide ── */
+  const revealControls = useCallback(() => {
+    setShowControls(true);
+    clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setShowControls(false), 3000);
+  }, []);
+
+  /* ── Handlers ── */
+  const togglePlay = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    if (vid.paused) { vid.play(); setIsPlaying(true); }
+    else { vid.pause(); setIsPlaying(false); }
+  };
+
+  const toggleMute = () => {
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.muted = !vid.muted;
+    setIsMuted(vid.muted);
+  };
+
+  const handleVolume = (e) => {
+    const v = parseFloat(e.target.value);
+    const vid = videoRef.current;
+    if (!vid) return;
+    vid.volume = v;
+    vid.muted = v === 0;
+    setVolume(v);
+    setIsMuted(v === 0);
+  };
+
+  const handleSeek = (e) => {
+    const bar = progressRef.current;
+    const vid = videoRef.current;
+    if (!bar || !vid || !vid.duration) return;
+    const rect = bar.getBoundingClientRect();
+    const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1);
+    vid.currentTime = ratio * vid.duration;
+  };
+
+  const fmt = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, '0')}`;
+  };
+
+  const toggleFullscreen = () => {
+    const section = sectionRef.current;
+    if (!section) return;
+    
+    if (!document.fullscreenElement) {
+      if (section.requestFullscreen) {
+        section.requestFullscreen().catch(err => {
+          console.error(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+      } else if (section.webkitRequestFullscreen) { /* Safari */
+        section.webkitRequestFullscreen();
+      } else if (section.msRequestFullscreen) { /* IE11 */
+        section.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { /* Safari */
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { /* IE11 */
+        document.msExitFullscreen();
+      }
+    }
+  };
+
+  return (
+    <div className="w-full bg-white dark:bg-gray-950 flex flex-col items-center pt-16 pb-8">
+      {/* Title */}
+      <ScrollReveal>
+        <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-8 px-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+          <span>The Story Behind</span>
+          <span className="bg-gradient-to-r from-green-500 to-emerald-400 bg-clip-text text-transparent">
+            Tawtheeq
+          </span>
+          <img src="/badge.png" alt="Badge" className="w-10 h-10 sm:w-11 sm:h-11 object-contain" />
+        </h2>
+      </ScrollReveal>
+
+      {/* Video Container */}
+      <section
+        ref={sectionRef}
+        className="relative overflow-hidden bg-black mx-auto rounded-xl shadow-2xl"
+        style={{ width: 'calc(100% - 2px)', height: 'calc(100vh - 200px)' }}
+        onMouseMove={revealControls}
+        onTouchStart={revealControls}
+      >
+      {/* Video */}
+      <video
+        ref={videoRef}
+        className="absolute inset-0 w-full h-full object-cover"
+        src="https://res.cloudinary.com/dh5whdbxf/video/upload/f_auto,q_auto/v1782324281/Tawtheeq_2026_frnbh6.mp4"
+        loop
+        muted
+        playsInline
+        onClick={togglePlay}
+        style={{ cursor: 'pointer' }}
+      />
+
+      {/* Subtle overlay */}
+      <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+
+      {/* Play/Pause centre indicator (flashes on click) */}
+      {!isPlaying && (
+        <button
+          onClick={togglePlay}
+          className="absolute inset-0 flex items-center justify-center z-10 group"
+          aria-label="Play video"
+        >
+          <div className="w-20 h-20 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center transition-transform group-hover:scale-110 shadow-2xl">
+            <svg className="w-9 h-9 text-white ml-1" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5,3 19,12 5,21" />
+            </svg>
+          </div>
+        </button>
+      )}
+
+      {/* ── Control Bar ── */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-20 transition-all duration-300"
+        style={{ opacity: showControls ? 1 : 0, pointerEvents: showControls ? 'auto' : 'none' }}
+      >
+        {/* Gradient fade behind controls */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-none" style={{ top: '-80px' }} />
+
+        <div className="relative px-5 pb-5 pt-3 flex flex-col gap-2">
+          {/* Progress bar */}
+          <div
+            ref={progressRef}
+            className="w-full h-1.5 bg-white/20 rounded-full cursor-pointer group relative"
+            onClick={handleSeek}
+          >
+            <div
+              className="h-full bg-gradient-to-r from-green-400 to-emerald-400 rounded-full relative transition-none"
+              style={{ width: `${progress}%` }}
+            >
+              {/* Scrub thumb */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mr-1.5" />
+            </div>
+          </div>
+
+          {/* Bottom row: controls + time */}
+          <div className="flex items-center gap-3">
+            {/* Play/Pause */}
+            <button
+              onClick={togglePlay}
+              className="text-white hover:text-green-400 transition-colors shrink-0"
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            >
+              {isPlaying ? (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16" rx="1" />
+                  <rect x="14" y="4" width="4" height="16" rx="1" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+              )}
+            </button>
+
+            {/* Mute toggle */}
+            <button
+              onClick={toggleMute}
+              className="text-white hover:text-green-400 transition-colors shrink-0"
+              aria-label={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted || volume === 0 ? (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" />
+                </svg>
+              ) : volume < 0.5 ? (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M15.54 8.46a5 5 0 010 7.07" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+                  <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+                </svg>
+              )}
+            </button>
+
+            {/* Volume slider */}
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.02"
+              value={isMuted ? 0 : volume}
+              onChange={handleVolume}
+              className="w-20 accent-green-400 cursor-pointer"
+              aria-label="Volume"
+            />
+
+            {/* Time */}
+            <span className="text-white/70 text-xs font-mono ml-1 shrink-0">
+              {fmt(currentTime)} / {fmt(duration)}
+            </span>
+
+            {/* Spacer */}
+            <div className="flex-grow" />
+
+            {/* Fullscreen toggle */}
+            <button
+              onClick={toggleFullscreen}
+              className="text-white hover:text-green-400 transition-colors shrink-0 ml-auto"
+              aria-label="Toggle Fullscreen"
+            >
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
    HOME PAGE COMPONENT
    ═══════════════════════════════════════════════════════════════════════ */
 export default function Home() {
@@ -200,6 +484,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* ─────────── VIDEO SECTION ─────────── */}
+      <VideoSection />
 
       {/* ─────────── STATS BAR ─────────── */}
       <section className="relative -mt-1 z-20 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-gray-900 dark:via-gray-850 dark:to-gray-900 border-t border-green-500/20">
