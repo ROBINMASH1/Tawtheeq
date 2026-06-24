@@ -13,7 +13,16 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 //security middlewares
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        "media-src": ["'self'", "https://res.cloudinary.com"],
+      },
+    },
+  })
+);
 
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
