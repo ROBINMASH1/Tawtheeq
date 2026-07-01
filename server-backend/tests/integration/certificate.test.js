@@ -48,7 +48,8 @@ describe('IT-02: Certificate Issuance Pipeline & Rollback', () => {
       identifier: 'staff_1',
       name: 'Staff Member',
       roleModel: 'uniUser',
-      profile: uniProfile._id
+      profile: uniProfile._id,
+      passwordHash: '$2b$10$dummyPasswordHash12345678901234567890'
     });
 
     staffToken = jwt.sign({

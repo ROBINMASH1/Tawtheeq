@@ -3,6 +3,8 @@ const app = require('../../src/server');
 const User = require('../../src/models/users.model');
 const bcrypt = require('bcrypt');
 
+const MoheAdmin = require('../../src/models/moheAdmins.model');
+
 require('./setup');
 
 describe('IT-01: Authentication Flow', () => {
@@ -11,10 +13,12 @@ describe('IT-01: Authentication Flow', () => {
 
   beforeEach(async () => {
     const passwordHash = await bcrypt.hash(password, 10);
+    const adminProfile = await MoheAdmin.create({ EmployeeID: 'EMP_12345' });
     testUser = await User.create({
       identifier: 'admin_test',
       name: 'Admin User',
       roleModel: 'MoheAdmin',
+      profile: adminProfile._id,
       passwordHash,
       failedLoginAttempts: 0,
       isLocked: false
