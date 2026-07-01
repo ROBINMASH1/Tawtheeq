@@ -17,10 +17,11 @@ jest.mock('../../src/services/ipfs.service', () => ({
   uploadToIPFS: jest.fn().mockResolvedValue('QmTestIpfsHash123456789'),
 }));
 
-const mockBlockchainService = {
+jest.mock('../../src/services/blockchain.service', () => ({
   issueCertificate: jest.fn().mockResolvedValue({ transactionID: '0xTestTxHash123456' }),
-};
-jest.mock('../../src/services/blockchain.service', () => mockBlockchainService);
+}));
+
+const mockBlockchainService = jest.requireMock('../../src/services/blockchain.service');
 
 describe('IT-02: Certificate Issuance Pipeline & Rollback', () => {
   let staffToken, universityId, staffUser;
